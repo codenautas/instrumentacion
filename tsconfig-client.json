@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "outDir": "client",
+        "lib":["es2017", "es2015", "dom"]
+    },
+    "include":[
+        "src/client"
+    ],
+    "extends": "./tsconfig.json"
+}

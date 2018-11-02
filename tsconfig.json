@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "outDir": "x:\this-dir-must-not-be-created",
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "lib":["es2015"],
+        "target": "es2017",
+        "module": "umd",
+        "typeRoots": ["node_modules/@types"],
+        "skipLibCheck": true,
+        "noImplicitAny": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": [
+        "src",
+        "test"
+    ]
+}
