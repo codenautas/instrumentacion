@@ -47,7 +47,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     'platform',
                 ]
                 res.type('html');
-                res.write(html.h1('Datos del puesto de trabajo').toHtmlText({},{}));
+                res.write(html.h1(['Datos del puesto de trabajo N° ',req.ip.split(/[:.]/).pop()]).toHtmlText({},{}));
                 attrs.forEach(function(attr){
                     res.write(html.p([attr, ' ', html.b(req.useragent[attr])]).toHtmlText({},{}));
                 })
@@ -58,11 +58,11 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     }
                     var uaResult = await client.query('SELECT * FROM user_agents WHERE ip = $1 AND user_agent = $2',[req.ip, req.headers["user-agent"]]).fetchOneRowIfExists();
                     if(!uaResult.row){
-                        await client.query('INSERT INTO user_agents (ip, user_agent) VALUES ($1, $2)',[req.ip, req.headers["user-agent"]).execute();
+                        await client.query('INSERT INTO user_agents (ip, user_agent) VALUES ($1, $2)',[req.ip, req.headers["user-agent"]]).execute();
                     }
                     console.log(req.headers);
-                    await client.query('UPDATE user_agents SET ips = $3 WHERE ip = $1 AND user_agent = $2',[req.ip, req.headers["user-agent"], req.ips]).execute();
                     res.write('<h2>ok</h2>');
+                    await client.query('UPDATE user_agents SET ips = $3 WHERE ip = $1 AND user_agent = $2',[req.ip, req.headers["user-agent"], req.ips]).execute();
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
             })
