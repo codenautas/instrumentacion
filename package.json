@@ -1,7 +1,7 @@
 {
   "name": "instrumentacion",
   "description": "Módulo de Instrumentacion",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/instrumentacion",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "unlogged"
   ],
   "dependencies": {
-    "backend-plus": "~0.25.42",
+    "backend-plus": "~0.26.3",
     "pg-triggers": "~0.2.2"
   },
   "devDependencies": {
