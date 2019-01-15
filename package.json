@@ -1,16 +1,15 @@
 {
   "name": "instrumentacion",
   "description": "Módulo de Instrumentacion",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/instrumentacion",
   "license": "MIT",
-  "main": "server/app-instrumentacion.js",
-  "types": "server/app-instrumentacion.d.ts",
+  "main": "dist/server/app-instrumentacion.js",
+  "types": "dist/server/app-instrumentacion.d.ts",
   "files": [
-    "client",
+    "dist",
     "install",
-    "server",
     "unlogged"
   ],
   "dependencies": {
@@ -21,15 +20,15 @@
     "copyfiles": "~2.1.0"
   },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "scripts": {
     "x-test": "tsc || echo \"continue with errors\" && mocha --reporter spec --bail --check-leaks tests\\tests\\*.js",
     "test": "(npm run build || echo \"continue with errors\") && mocha --reporter spec --bail --check-leaks tests/tests/*.js",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks tests/tests/",
-    "start": "node server/server-instrumentacion.js",
+    "start": "node dist/server/server-instrumentacion.js",
     "prepare": "npm run build",
-    "cp": "copyfiles -f src/client/img/* client/img",
+    "cp": "copyfiles -f src/client/img/* dist/client/img",
     "build": "npm run cp && (tsc -p tsconfig-client.json || echo \"continue w/error\") && (tsc -p tsconfig-server.json  || echo \"continue w/error\")"
   },
   "qa-control": {
