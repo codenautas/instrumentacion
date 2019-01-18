@@ -42,7 +42,7 @@ login:
     loginForm:
       formTitle: Instrumentacion
       usernameLabel: usuario
-      passwordLabel: md5clave
+      passwordLabel: clave
       buttonLabel: entrar
       formImg: img/login-lock-icon.png
     chPassForm:

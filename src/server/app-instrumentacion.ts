@@ -10,6 +10,8 @@ import { usuarios } from './table-usuarios';
 import { ubicaciones } from './table-ubicaciones';
 import { ip } from './table-ip';
 import { user_agents } from './table-user_agents';
+import { servidores } from './table-servidores';
+
 import { html } from 'js-to-html';
 import * as MiniTools from 'mini-tools';
 import { NextFunction } from "express";
@@ -39,6 +41,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
 
         addUnloggedServices(mainApp:ExpressPlus, baseUrl:string):void{
             var be=this;
+            super.addUnloggedServices(mainApp, baseUrl);
             mainApp.get(baseUrl+'/ver', async function(req:Request, res:Response, next:NextFunction){
                 var attrs=[
                     'browser',
@@ -74,6 +77,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'ubicaciones'},
                     {menuType:'table', name:'ip'},
                     {menuType:'table', name:'user_agents'},
+                ]}, 
+                {menuType:'menu', name:'servicios', menuContent:[
+                    {menuType:'table', name:'servidores'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -87,7 +93,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 usuarios,
                 ubicaciones,
                 ip,
-                user_agents
+                user_agents,
+                servidores
             }
         }
     }
