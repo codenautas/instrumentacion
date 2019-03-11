@@ -10,7 +10,7 @@
             "request": "launch",
             "name": "Launch Program",
             "preLaunchTask": "build-all",
-            "program": "${workspaceFolder}/server/server-instrumentacion.js",
+            "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
@@ -20,7 +20,7 @@
             "request": "launch",
             "name": "dumpDb",
             "preLaunchTask": "tsc-server",
-            "program": "${workspaceFolder}/server/server-instrumentacion.js",
+            "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",
             "args": [
                 "--dump-db"
             ],
