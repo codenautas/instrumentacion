@@ -2,7 +2,7 @@
 
 import {TableDefinition, TableContext} from "./types-instrumentacion"
 
-export function servidores(context: TableContext): TableDefinition {
+export function databases(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
     return {
         name: 'databases',
@@ -25,7 +25,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "seg_integridad"        , typeName: 'integer' },
             { name: "seg_disponibilidad"    , typeName: 'integer' },
         ],
-        primaryKey: ['servidor,database,port'],
+        primaryKey: ['servidor','database','port'],
         foreignKeys:[
             {references: 'servidores' , fields:['servidor'], abr:'s'/*, displayAllFields:true*/},
         ],
