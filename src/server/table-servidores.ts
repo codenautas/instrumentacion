@@ -12,6 +12,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "servidor"           , typeName: 'text'    },
             { name: "hostname"           , typeName: 'text'    },
             { name: "ip"                 , typeName: 'text'    },
+            { name: "ip_anterior"        , typeName: 'text'    },
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
             { name: "pw"                 , typeName: 'text'    },
             { name: "infodisk"           , typeName: 'text'    , label:"df -h"},
