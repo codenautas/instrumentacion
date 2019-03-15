@@ -21,6 +21,9 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "coderun"            , typeName: 'text'    },
             { name: "obs"                , typeName: 'text'    },
         ],
-        primaryKey: ['servidor']
+        primaryKey: ['servidor'],
+        detailTables:[
+            {table: 'databases'      , fields:[{source:'servidor', target:'servidor'}], abr:'D', label:'databases'},
+        ],
     }
 }
