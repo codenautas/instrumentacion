@@ -13,7 +13,6 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "servidor"      , typeName: 'text'    },
             { name: "ambiente"      , typeName: 'text'    },
             { name: "user"          , typeName: 'text'    },
-            { name: "servidor"      , typeName: 'text'    },
             { name: "database"      , typeName: 'text'    },
             { name: "aplicacion"    , typeName: 'text'    },
             { name: "puerto"        , typeName: 'integer' },
