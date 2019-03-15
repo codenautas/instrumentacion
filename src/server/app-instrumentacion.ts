@@ -12,6 +12,9 @@ import { ip } from './table-ip';
 import { user_agents } from './table-user_agents';
 import { servidores } from './table-servidores';
 import { databases } from './table-databases';
+import { instapp } from './table-instapp';
+import { backups } from './table-backups';
+import { motores } from './table-motores';
 
 import { html } from 'js-to-html';
 import * as MiniTools from 'mini-tools';
@@ -82,6 +85,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'servicios', menuContent:[
                     {menuType:'table', name:'servidores'},
                     {menuType:'table', name:'databases'},
+                    {menuType:'table', name:'instapp'},
+                    {menuType:'table', name:'backups'},
+                    {menuType:'table', name:'motores'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -97,7 +103,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 ip,
                 user_agents,
                 servidores,
-                databases
+                databases,
+                instapp,
+                backups,
+                motores
             }
         }
     }
