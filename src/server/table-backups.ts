@@ -17,10 +17,9 @@ export function backups(context: TableContext): TableDefinition {
             { name: "metodo"             , typeName: 'text' },
         ],
         primaryKey: ['database','servidor','servidor_destino'],
-        foreignKeys:[
-            {references: 'databases'      , fields:['database']},
-            {references: 'databases'      , fields:['servidor']},
-            {references: 'databases'      , fields:[{source:'servidor_destino',target:'servidor'}],
-        ],
+        //foreignKeys:[
+        //    {references: 'databases'      , fields:['database']},
+              {references: 'servidores'     , fields:['servidor']},
+        //],
     }
 }

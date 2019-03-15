@@ -24,7 +24,6 @@ export function instapp(context: TableContext): TableDefinition {
         primaryKey: ['instancia','ambiente'],
         foreignKeys:[
             {references: 'servidores' , fields:['servidor'], abr:'S'/*, displayAllFields:true*/},
-            {references: 'databases'  , fields:['database'], abr:'D'/*, displayAllFields:true*/},
         ],
     }
 }
