@@ -28,7 +28,7 @@ export function databases(context: TableContext): TableDefinition {
             { name: "path_interno"          , typeName: 'text'    },
             { name: "so_user"               , typeName: 'text'    },
             { name: "servicio"              , typeName: 'text'    },
-            { name: "enabled"               , typeName: 'integer' },
+            { name: "enabled"               , typeName: 'boolean' },
             { name: "motor"                 , typeName: 'text'    },
             { name: "so_path"               , typeName: 'text'    },
             { name: "fuente"                , typeName: 'text'    },
