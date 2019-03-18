@@ -1,0 +1,1 @@
+alter table servidores add column web jsonb

@@ -20,6 +20,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "conf_path"          , typeName: 'text'    },
             { name: "coderun"            , typeName: 'text'    },
             { name: "obs"                , typeName: 'text'    },
+            { name: "web"                , typeName: 'jsonb'   },
         ],
         primaryKey: ['servidor'],
         detailTables:[
