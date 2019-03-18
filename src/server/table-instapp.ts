@@ -14,6 +14,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "ambiente"      , typeName: 'text'    },
             { name: "user"          , typeName: 'text'    },
             { name: "database"      , typeName: 'text'    },
+            { name: "db_port"       , typeName: 'integer' },
             { name: "aplicacion"    , typeName: 'text'    },
             { name: "puerto"        , typeName: 'integer' },
             { name: "base_url"      , typeName: 'text'    },
@@ -23,7 +24,11 @@ export function instapp(context: TableContext): TableDefinition {
         ],
         primaryKey: ['instancia','ambiente'],
         foreignKeys:[
-            {references: 'servidores' , fields:['servidor'], abr:'S'/*, displayAllFields:true*/},
+            {references: 'servidores' , fields:['servidor'], alias:'S'/*, displayAllFields:true*/},
+            {references: 'databases'  , fields:['servidor', 'database', {source:'db_port', target:'port'}], alias:'S'/*, displayAllFields:true*/},
         ],
+        constraints:[
+            {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
+        ]
     }
 }

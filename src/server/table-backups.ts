@@ -19,7 +19,7 @@ export function backups(context: TableContext): TableDefinition {
         primaryKey: ['database','servidor','servidor_destino'],
         //foreignKeys:[
         //    {references: 'databases'      , fields:['database']},
-              {references: 'servidores'     , fields:['servidor']},
+            //{references: 'servidores'     , fields:['servidor']},
         //],
     }
 }
