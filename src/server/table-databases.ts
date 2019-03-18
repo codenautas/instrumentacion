@@ -38,7 +38,8 @@ export function databases(context: TableContext): TableDefinition {
             {references: 'servidores' , fields:['servidor'], abr:'s'/*, displayAllFields:true*/},
         ],
         detailTables:[
-            {table: 'backups'      , fields:['database'], abr:'D', label:'databases'},
+            {table: 'backups'      , fields:['database'], abr:'B', label:'databases'},
+            {table: 'instapp'      , fields:['database'], abr:'I', label:'databases'},
         ],
     }
 }
