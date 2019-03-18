@@ -24,8 +24,8 @@ export function instapp(context: TableContext): TableDefinition {
         ],
         primaryKey: ['instancia','ambiente'],
         foreignKeys:[
-            {references: 'servidores' , fields:['servidor'], alias:'S'/*, displayAllFields:true*/},
-            {references: 'databases'  , fields:['servidor', 'database', {source:'db_port', target:'port'}], alias:'S'/*, displayAllFields:true*/},
+            {references: 'servidores' , fields:['servidor']},
+            {references: 'databases'  , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
         ],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
