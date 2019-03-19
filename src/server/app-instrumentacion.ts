@@ -17,6 +17,7 @@ import { backups } from './table-backups';
 import { motores } from './table-motores';
 import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
+import { areas } from './table-areas';
 
 import { html } from 'js-to-html';
 import { NextFunction } from "express";
@@ -93,6 +94,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'motores'},
                     {menuType:'table', name:'aplicaciones'},
                     {menuType:'table', name:'productos'}
+                    {menuType:'table', name:'areas'}
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -113,7 +115,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 backups,
                 motores,
                 aplicaciones,
-                productos
+                productos,
+                areas
             }
         }
     }

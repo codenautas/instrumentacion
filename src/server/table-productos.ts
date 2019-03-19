@@ -6,7 +6,7 @@ export function productos(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
     return {
         name: 'productos',
-        elementName: 'motor',
+        elementName: 'producto',
         editable: admin,
         fields: [
             { name: "producto"           , typeName: 'text' },

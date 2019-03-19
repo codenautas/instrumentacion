@@ -37,6 +37,7 @@ export function databases(context: TableContext): TableDefinition {
         primaryKey: ['database','servidor','port'],
         foreignKeys:[
             {references: 'servidores' , fields:['servidor']},
+            {references: 'areas' , fields:['area']},
         ],
         detailTables:[
             {table: 'backups'      , fields:['database'], abr:'B', label:'backups'},
