@@ -19,6 +19,8 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "aplicacion"    , typeName: 'text'    },
             { name: "puerto"        , typeName: 'integer' },
             { name: "base_url"      , typeName: 'text'    },
+            { name: "version"       , typeName: 'text'    },
+            { name: "bp_version"    , typeName: 'text'    },
             { name: "obs"           , typeName: 'text'    },
         ],
         primaryKey: ['instancia','ambiente'],
