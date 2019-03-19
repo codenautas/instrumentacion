@@ -10,6 +10,7 @@ export function instapp(context: TableContext): TableDefinition {
         editable: admin,
         fields: [
             { name: "instancia"     , typeName: 'text'    },
+            { name: "aplicacion"    , typeName: 'text'    },
             { name: "servidor"      , typeName: 'text'    },
             { name: "ambiente"      , typeName: 'text'    },
             { name: "user"          , typeName: 'text'    },
@@ -18,15 +19,13 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "aplicacion"    , typeName: 'text'    },
             { name: "puerto"        , typeName: 'integer' },
             { name: "base_url"      , typeName: 'text'    },
-            { name: "git_host"      , typeName: 'text'    },
-            { name: "git_proyect"   , typeName: 'text'    },
-            { name: "git_group"     , typeName: 'text'    },
             { name: "obs"           , typeName: 'text'    },
         ],
         primaryKey: ['instancia','ambiente'],
         foreignKeys:[
-            {references: 'servidores' , fields:['servidor']},
-            {references: 'databases'  , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
+            {references: 'servidores'   , fields:['servidor']},
+            {references: 'databases'    , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
+            {references: 'aplicaciones' , fields:['aplicacion']},
         ],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
