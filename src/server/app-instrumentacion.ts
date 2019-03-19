@@ -3,7 +3,7 @@
 import * as backendPlus from "backend-plus";
 import {defConfig} from "./def-config";
 import {procedures} from "./procedures-instrumentacion";
-import { AppBackend, ClientModuleDefinition, ProcedureDef, ExpressPlus, Context, Request, Response, TableContext, TableDefinition, TableDefinitionFunction } from "./types-instrumentacion";
+import { AppBackend, ClientModuleDefinition, ProcedureDef, ExpressPlus, Request, Response } from "./types-instrumentacion";
 export * from "./types-instrumentacion";
 
 import { usuarios } from './table-usuarios';
@@ -17,7 +17,6 @@ import { backups } from './table-backups';
 import { motores } from './table-motores';
 
 import { html } from 'js-to-html';
-import * as MiniTools from 'mini-tools';
 import { NextFunction } from "express";
 
 export type Constructor<T> = new(...args: any[]) => T;
@@ -46,7 +45,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         addUnloggedServices(mainApp:ExpressPlus, baseUrl:string):void{
             var be=this;
             super.addUnloggedServices(mainApp, baseUrl);
-            mainApp.get(baseUrl+'/ver', async function(req:Request, res:Response, next:NextFunction){
+            mainApp.get(baseUrl+'/ver', async function(req:Request, res:Response, _next:NextFunction){
                 var attrs=[
                     'browser',
                     'version',
@@ -56,7 +55,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 res.type('html');
                 res.write(html.h1(['Datos del puesto de trabajo N° ',req.ip.split(/[:.]/).pop()]).toHtmlText({},{}));
                 attrs.forEach(function(attr){
-                    res.write(html.p([attr, ' ', html.b(req.useragent[attr])]).toHtmlText({},{}));
+                    // @ts-ignore EL user agent para mostrar es un string!!!
+                    var userAgentParaMostrar:string=(req.useragent?req.useragent[attr]:'') || '';
+                    res.write(html.p([attr, ' ', html.b(userAgentParaMostrar)]).toHtmlText({},{}));
                 })
                 await be.inTransaction(req, async function(client){
                     var ipResult = await client.query('SELECT * FROM ip WHERE ip = $1',[req.ip]).fetchOneRowIfExists();

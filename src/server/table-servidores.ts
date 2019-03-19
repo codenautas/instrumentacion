@@ -24,8 +24,9 @@ export function servidores(context: TableContext): TableDefinition {
         ],
         primaryKey: ['servidor'],
         detailTables:[
-            {table: 'databases'      , fields:[{source:'servidor', target:'servidor'}], abr:'D', label:'databases'},
-            {table: 'motores'        , fields:['servidor']                            , abr:'M', label:'motores'  },
+            {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
+            {table: 'motores'        , fields:['servidor'], abr:'M', label:'motores'      },
+            {table: 'instapp'        , fields:['servidor'], abr:'I', label:'instalaciones'},
         ],
     }
 }

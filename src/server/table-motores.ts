@@ -12,7 +12,7 @@ export function motores(context: TableContext): TableDefinition {
             { name: "servidor"           , typeName: 'text' },
             { name: "producto"           , typeName: 'text' },
             { name: "tipo"               , typeName: 'text' },
-            { name: "version"            , typeName: 'text' }
+            { name: "version"            , typeName: 'text' },
             { name: "puerto"             , typeName: 'text' },
             { name: "obs"                , typeName: 'text' },
         ],

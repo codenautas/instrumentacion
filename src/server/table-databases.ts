@@ -36,11 +36,11 @@ export function databases(context: TableContext): TableDefinition {
         ],
         primaryKey: ['servidor','database','port'],
         foreignKeys:[
-            {references: 'servidores' , fields:['servidor'], abr:'s'/*, displayAllFields:true*/},
+            {references: 'servidores' , fields:['servidor']},
         ],
         detailTables:[
-            {table: 'backups'      , fields:['database'], abr:'B', label:'databases'},
-            {table: 'instapp'      , fields:['database'], abr:'I', label:'databases'},
+            {table: 'backups'      , fields:['database'], abr:'B', label:'backups'},
+            {table: 'instapp'      , fields:['servidor','database',{source:'port', target:'db_port'}], abr:'I', label:'instalaciones'},
         ],
     }
 }
