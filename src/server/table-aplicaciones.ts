@@ -13,6 +13,8 @@ export function aplicaciones(context: TableContext): TableDefinition {
             { name: "git_host"      , typeName: 'text'    },
             { name: "git_group"     , typeName: 'text'    },
             { name: "git_project"   , typeName: 'text'    },
+            { name: "version"       , typeName: 'text'    },
+            { name: "bp_version"    , typeName: 'text'    label:'versión de backendplus'},
             { name: "obs"           , typeName: 'text'    },
         ],
         primaryKey: ['aplicacion'],
