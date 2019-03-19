@@ -15,6 +15,7 @@ export function backups(context: TableContext): TableDefinition {
             { name: "path"               , typeName: 'text' },
             { name: "periodicidad"       , typeName: 'text' },
             { name: "metodo"             , typeName: 'text' },
+            { name: "obs"                 , typeName: 'text' },
         ],
         primaryKey: ['database','servidor','servidor_destino'],
         //foreignKeys:[

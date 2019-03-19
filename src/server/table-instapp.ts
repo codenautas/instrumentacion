@@ -20,6 +20,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "git_host"      , typeName: 'text'    },
             { name: "git_proyect"   , typeName: 'text'    },
             { name: "git_group"     , typeName: 'text'    },
+            { name: "obs"           , typeName: 'text'    },
         ],
         primaryKey: ['instancia','ambiente'],
         foreignKeys:[

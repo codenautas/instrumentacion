@@ -32,6 +32,7 @@ export function databases(context: TableContext): TableDefinition {
             { name: "motor"                 , typeName: 'text'    },
             { name: "so_path"               , typeName: 'text'    },
             { name: "fuente"                , typeName: 'text'    },
+            { name: "obs"                   , typeName: 'text'    },
         ],
         primaryKey: ['servidor','database','port'],
         foreignKeys:[

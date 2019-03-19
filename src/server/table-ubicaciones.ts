@@ -11,6 +11,7 @@ export function ubicaciones(context: TableContext): TableDefinition {
             { name: "ubicacion"          , typeName: 'text'    },
             { name: "descripcion"        , typeName: 'text'    },
             { name: "edificio"           , typeName: 'text'    },
+            { name: "obs"                , typeName: 'text'    },
         ],
         primaryKey: ['ubicacion'],
         detailTables: [

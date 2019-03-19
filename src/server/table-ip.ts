@@ -13,6 +13,7 @@ export function ip(context: TableContext): TableDefinition {
             { name: "uhabitual"          , typeName: 'text'    },
             { name: "tmp_ubicacion"      , typeName: 'text'    },
             { name: "tmp_uhabitual"      , typeName: 'text'    },
+            { name: "obs"                , typeName: 'text'    },
         ],
         primaryKey: ['ip'],
         foreignKeys: [

@@ -14,6 +14,7 @@ export function motores(context: TableContext): TableDefinition {
             { name: "tipo"               , typeName: 'text' },
             { name: "version"            , typeName: 'text' }
             { name: "puerto"             , typeName: 'text' },
+            { name: "obs"                , typeName: 'text' },
         ],
         primaryKey: ['servidor','producto','version'],
         foreignKeys:[
