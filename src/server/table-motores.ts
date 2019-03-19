@@ -11,7 +11,6 @@ export function motores(context: TableContext): TableDefinition {
         fields: [
             { name: "servidor"           , typeName: 'text' },
             { name: "producto"           , typeName: 'text' },
-            { name: "tipo"               , typeName: 'text' },
             { name: "version"            , typeName: 'text' },
             { name: "puerto"             , typeName: 'text' },
             { name: "obs"                , typeName: 'text' },
@@ -19,6 +18,7 @@ export function motores(context: TableContext): TableDefinition {
         primaryKey: ['servidor','producto','version'],
         foreignKeys:[
             {references: 'servidores'      , fields:['servidor']},
+            {references: 'productos'       , fields:['producto']},
         ],
     }
 }

@@ -34,7 +34,7 @@ export function databases(context: TableContext): TableDefinition {
             { name: "fuente"                , typeName: 'text'    },
             { name: "obs"                   , typeName: 'text'    },
         ],
-        primaryKey: ['servidor','database','port'],
+        primaryKey: ['database','servidor','port'],
         foreignKeys:[
             {references: 'servidores' , fields:['servidor']},
         ],

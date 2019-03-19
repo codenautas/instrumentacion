@@ -15,9 +15,9 @@ export function aplicaciones(context: TableContext): TableDefinition {
             { name: "git_project"   , typeName: 'text'    },
             { name: "obs"           , typeName: 'text'    },
         ],
+        primaryKey: ['aplicacion'],
         detailTables: [
             {table: 'instapp'      , fields:['aplicacion'], abr:'I', label:'instancias'    },
         ]
-        primaryKey: ['aplicacion'],
     }
 }

@@ -10,9 +10,9 @@ export function instapp(context: TableContext): TableDefinition {
         editable: admin,
         fields: [
             { name: "instancia"     , typeName: 'text'    },
+            { name: "ambiente"      , typeName: 'text'    },
             { name: "aplicacion"    , typeName: 'text'    },
             { name: "servidor"      , typeName: 'text'    },
-            { name: "ambiente"      , typeName: 'text'    },
             { name: "user"          , typeName: 'text'    },
             { name: "database"      , typeName: 'text'    },
             { name: "db_port"       , typeName: 'integer' },
