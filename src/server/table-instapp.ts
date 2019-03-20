@@ -16,7 +16,6 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "user"          , typeName: 'text'    },
             { name: "database"      , typeName: 'text'    },
             { name: "db_port"       , typeName: 'integer' },
-            { name: "aplicacion"    , typeName: 'text'    },
             { name: "puerto"        , typeName: 'integer' },
             { name: "base_url"      , typeName: 'text'    },
             { name: "version"       , typeName: 'text'    },
