@@ -1,6 +1,5 @@
 "use strict";
 
-const graphql = require('@octokit/graphql')
 import * as http from "http";
 import * as https from "https";
 import { RequestOptions } from "https";
