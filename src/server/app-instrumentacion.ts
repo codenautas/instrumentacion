@@ -18,6 +18,7 @@ import { motores } from './table-motores';
 import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
 import { areas } from './table-areas';
+import { api_calls } from './table-api_calls';
 
 import { html } from 'js-to-html';
 import { NextFunction } from "express";
@@ -26,7 +27,6 @@ export type Constructor<T> = new(...args: any[]) => T;
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base:T){
     
     return class AppInstrumentacion extends Base{
-        myProcedures: ProcedureDef[] = procedures;
 
         constructor(...args:any[]){ 
             super(args);    
@@ -38,6 +38,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {type:'js', src: 'client/instrumentacion.js' }
                 ]:[]
             )
+        }
+
+        async getProcedures(){
+            return (await super.getProcedures()).concat(procedures);
         }
 
         configStaticConfig(){
@@ -93,8 +97,12 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'backups'},
                     {menuType:'table', name:'motores'},
                     {menuType:'table', name:'aplicaciones'},
-                    {menuType:'table', name:'productos'}
+                    {menuType:'table', name:'productos'},
                     {menuType:'table', name:'areas'}
+                ]}, 
+                {menuType:'menu', name:'provisorio', menuContent:[
+                    {menuType:'table', name:'api_calls'},
+                    {menuType:'proc', name:'api_call'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -116,7 +124,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 motores,
                 aplicaciones,
                 productos,
-                areas
+                areas,
+                api_calls
             }
         }
     }

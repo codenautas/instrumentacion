@@ -19,7 +19,7 @@
             "type": "node",
             "request": "launch",
             "name": "dumpDb",
-            "preLaunchTask": "tsc-server",
+            "preLaunchTask": "build-all",
             "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",
             "args": [
                 "--dump-db"
