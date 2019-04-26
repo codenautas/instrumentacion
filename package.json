@@ -13,7 +13,7 @@
     "unlogged"
   ],
   "dependencies": {
-    "backend-plus": "~0.29.26",
+    "backend-plus": "~0.29.32",
     "pg-triggers": "~0.2.3"
   },
   "devDependencies": {
