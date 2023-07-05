@@ -3,7 +3,7 @@
 import * as backendPlus from "backend-plus";
 import {defConfig} from "./def-config";
 import {procedures} from "./procedures-instrumentacion";
-import { AppBackend, ClientModuleDefinition, ProcedureDef, ExpressPlus, Request, Response } from "./types-instrumentacion";
+import { AppBackend, ClientModuleDefinition, ExpressPlus, Request, Response } from "./types-instrumentacion";
 export * from "./types-instrumentacion";
 
 import { usuarios } from './table-usuarios';
@@ -19,8 +19,10 @@ import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
 import { areas } from './table-areas';
 import { api_calls } from './table-api_calls';
+import * as MiniTools from "mini-tools";
+import { unexpected, expected } from 'cast-error';
 
-import { html } from 'js-to-html';
+import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
 
 export type Constructor<T> = new(...args: any[]) => T;
@@ -49,9 +51,37 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             this.setStaticConfig(defConfig);
         }
 
+        commonPage(req:Request, content:HtmlTag<any>[], opts:{img?:string}){
+            //var logo = opts.img?.endsWith('.png') ? opts.img : 'img/logo-128.png';
+            var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
+            return html.html({lang}, [
+                html.head([
+                    html.meta({name:'viewport', content:'width=device-width, initial-scale=1'}), //, user-scalable=no
+                    html.meta({name:'format-detection', content:'telephone=no'}),
+                    html.meta({name:'apple-mobile-web-app-capable', content:'yes'}),
+                    html.meta({name:'apple-mobile-web-app-status-bar-style', content:'black'}),
+                    html.meta({name:'mobile-web-app-capable', content:'yes'}),
+                    html.meta({name:'mobile-web-app-status-bar-style', content:'black'}),
+/*                     html.link({href:logo, rel:'shortcut icon', type:'image/png'}),
+                    html.link({href:logo, rel:'icon', type:'image/png'}),
+                    html.link({href:logo, rel:'apple-touch-icon'}),*/
+                    html.link({rel:"stylesheet", href:`css/common-inst.styl`}), 
+                ]),
+                html.body({class:'brand-page'},[ 
+                    html.div([content])
+                    /* html.div({class:'main-layout'}, [
+                        html.div({id:'message-box', $attrs:{"has-content": "no"}}, [content]),
+                        html.div({id:'main-container'}, [content])
+                    ]), */
+                ])
+            ])
+        }
+
         addUnloggedServices(mainApp:ExpressPlus, baseUrl:string):void{
             var be=this;
+            
             super.addUnloggedServices(mainApp, baseUrl);
+
             mainApp.get(baseUrl+'/ver', async function(req:Request, res:Response, _next:NextFunction){
                 var attrs=[
                     'browser',
@@ -80,7 +110,32 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     await client.query('UPDATE user_agents SET ips = $3 WHERE ip = $1 AND user_agent = $2',[req.ip, req.headers["user-agent"], req.ips]).execute();
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
-            })
+            });
+            mainApp.get(baseUrl+`/documentacion/:instancia`,async function(req:Request, res:Response, _next:NextFunction){
+                try{
+                    // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
+                    await be.inDbClient(req, async function(client){
+                        const documentQuery = client.query(`
+                            select * from instapp where instancia = $1
+                        `,[req.params.instancia]).fetchUniqueRow();
+                        const {row:documentRow} = await documentQuery!;
+                        const mainContent = [html.div([
+                            html.h1(['Registro de instalación de la aplicación y del código fuente']),
+                            html.div(['Identificación de instalación: ', documentRow.instancia]),
+                            html.div([documentRow.servidor]),
+                        ])];
+                        const htmlPage=be.commonPage(req, mainContent, {})
+                        var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
+                        MiniTools.serveText(txtPage,'html')(req,res);
+                    });
+                }catch(err){
+                    console.log('ERROR CON', req.headers.host, req.url)
+                    var error = unexpected(err)
+                    error.code = error.code || '500';
+                    error.message = req.params.nickname + ': ' + error.message;
+                    MiniTools.serveErr(req, res, _next)(error);
+                }
+            });
         }
 
         getMenu():backendPlus.MenuDefinition{
