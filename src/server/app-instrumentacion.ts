@@ -15,12 +15,13 @@ import { databases } from './table-databases';
 import { instapp } from './table-instapp';
 import { backups } from './table-backups';
 import { motores } from './table-motores';
+import { categorias_doc } from './table-categorias_doc';
 import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
 import { areas } from './table-areas';
 import { api_calls } from './table-api_calls';
 import * as MiniTools from "mini-tools";
-import { unexpected, expected } from 'cast-error';
+import { unexpected } from 'cast-error';
 
 import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
@@ -65,7 +66,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
 /*                     html.link({href:logo, rel:'shortcut icon', type:'image/png'}),
                     html.link({href:logo, rel:'icon', type:'image/png'}),
                     html.link({href:logo, rel:'apple-touch-icon'}),*/
-                    html.link({rel:"stylesheet", href:`css/common-inst.styl`}), 
+                    html.link({rel:"stylesheet", href:`css/common-inst.css`}), 
                 ]),
                 html.body({class:'brand-page'},[ 
                     html.div([content])
@@ -114,22 +115,24 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             mainApp.get(baseUrl+`/documentacion/:instancia`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
-                    await be.inDbClient(req, async function(client){
+                    await be.inDbClient(req, async function(client){                        
                         const documentQuery = client.query(`
                             select * from instapp where instancia = $1
-                        `,[req.params.instancia]).fetchUniqueRow();
-                        const {row:documentRow} = await documentQuery!;
+                        `,[req.params.instancia]).fetchAll();
+                        const {rows:documentRow} = await documentQuery!;
                         const mainContent = [html.div([
                             html.h1(['Registro de instalación de la aplicación y del código fuente']),
-                            html.div(['Identificación de instalación: ', documentRow.instancia]),
-                            html.div([documentRow.servidor]),
+                            html.div([
+                                html.label({class:'text'},['Identificación de instalación: ', documentRow[0].instancia])
+                            ]),
+                            html.div([documentRow[0].servidor]),
                         ])];
                         const htmlPage=be.commonPage(req, mainContent, {})
                         var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
                         MiniTools.serveText(txtPage,'html')(req,res);
                     });
                 }catch(err){
-                    console.log('ERROR CON', req.headers.host, req.url)
+                    console.error('ERROR CON', req.headers.host, req.url)
                     var error = unexpected(err)
                     error.code = error.code || '500';
                     error.message = req.params.nickname + ': ' + error.message;
@@ -174,6 +177,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 user_agents,
                 servidores,
                 databases,
+                categorias_doc,
                 instapp,
                 backups,
                 motores,

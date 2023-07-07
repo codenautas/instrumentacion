@@ -26,6 +26,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "enabled"             , typeName: 'text'    },
             { name: "motor"               , typeName: 'text'    },
             { name: "so_path"             , typeName: 'text'    },
+            { name: "categoria_doc"       , typeName: 'text'    },
             { name: "obs"                 , typeName: 'text'    },
         ],
         primaryKey: ['instancia','ambiente'],
@@ -33,6 +34,7 @@ export function instapp(context: TableContext): TableDefinition {
             {references: 'servidores'   , fields:['servidor']},
             {references: 'databases'    , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
             {references: 'aplicaciones' , fields:['aplicacion']},
+            {references: 'categorias_doc' , fields:['categoria_doc']},
         ],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
