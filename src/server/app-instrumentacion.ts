@@ -69,7 +69,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     html.link({rel:"stylesheet", href:`css/common-inst.css`}), 
                 ]),
                 html.body({class:'brand-page'},[ 
-                    html.div([content])
+                    content
                     /* html.div({class:'main-layout'}, [
                         html.div({id:'message-box', $attrs:{"has-content": "no"}}, [content]),
                         html.div({id:'main-container'}, [content])
@@ -123,9 +123,18 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         const mainContent = [html.div([
                             html.h1(['Registro de instalación de la aplicación y del código fuente']),
                             html.div([
-                                html.label({class:'text'},['Identificación de instalación: ', documentRow[0].instancia])
+                                html.span({class:'text'},['Identificación de instalación: ']),
+                                html.span([documentRow[0].instancia]),
                             ]),
-                            html.div([documentRow[0].servidor]),
+                            html.div([
+                                html.span({class:'text'},['Nombre de la aplicación: ']),
+                                html.span([documentRow[0].aplicacion]),
+                            ]),
+                            html.div([
+                                html.h3(['Ambiente']),
+                                documentRow.map(e=>{
+                                    return html.div([e.ambiente])}),
+                            ]),
                         ])];
                         const htmlPage=be.commonPage(req, mainContent, {})
                         var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
