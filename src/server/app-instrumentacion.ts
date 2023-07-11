@@ -35,8 +35,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             super(args);    
         }
 
-        clientIncludes(req:Request|null, hideBEPlusInclusions?:boolean):ClientModuleDefinition[]{
-            return super.clientIncludes(req, hideBEPlusInclusions).concat(
+        clientIncludes(req:Request, opts:any):ClientModuleDefinition[]{
+            return super.clientIncludes(req, opts).concat(
                 req && req.user?[
                     {type:'js', src: 'client/instrumentacion.js' }
                 ]:[]
@@ -52,28 +52,18 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             this.setStaticConfig(defConfig);
         }
 
-        commonPage(req:Request, content:HtmlTag<any>[], opts:{img?:string}){
+        commonPage(req:Request, content:HtmlTag<any>[], baseUrl:String/* , opts:{img?:string} */){
             //var logo = opts.img?.endsWith('.png') ? opts.img : 'img/logo-128.png';
             var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
             return html.html({lang}, [
                 html.head([
-                    html.meta({name:'viewport', content:'width=device-width, initial-scale=1'}), //, user-scalable=no
-                    html.meta({name:'format-detection', content:'telephone=no'}),
-                    html.meta({name:'apple-mobile-web-app-capable', content:'yes'}),
-                    html.meta({name:'apple-mobile-web-app-status-bar-style', content:'black'}),
-                    html.meta({name:'mobile-web-app-capable', content:'yes'}),
-                    html.meta({name:'mobile-web-app-status-bar-style', content:'black'}),
 /*                     html.link({href:logo, rel:'shortcut icon', type:'image/png'}),
                     html.link({href:logo, rel:'icon', type:'image/png'}),
                     html.link({href:logo, rel:'apple-touch-icon'}),*/
-                    html.link({rel:"stylesheet", href:`css/common-inst.css`}), 
+                    html.link({rel:"stylesheet", href:`${baseUrl}/css/common-inst.css`}), 
                 ]),
                 html.body({class:'brand-page'},[ 
                     content
-                    /* html.div({class:'main-layout'}, [
-                        html.div({id:'message-box', $attrs:{"has-content": "no"}}, [content]),
-                        html.div({id:'main-container'}, [content])
-                    ]), */
                 ])
             ])
         }
@@ -115,31 +105,33 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             mainApp.get(baseUrl+`/documentacion/:instancia`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
+                    let documentQuery;
                     await be.inDbClient(req, async function(client){                        
-                        const documentQuery = client.query(`
+                        documentQuery = client.query(`
                             select * from instapp where instancia = $1
                         `,[req.params.instancia]).fetchAll();
-                        const {rows:documentRow} = await documentQuery!;
-                        const mainContent = [html.div([
-                            html.h1(['Registro de instalación de la aplicación y del código fuente']),
-                            html.div([
-                                html.span({class:'text'},['Identificación de instalación: ']),
-                                html.span([documentRow[0].instancia]),
-                            ]),
-                            html.div([
-                                html.span({class:'text'},['Nombre de la aplicación: ']),
-                                html.span([documentRow[0].aplicacion]),
-                            ]),
-                            html.div([
-                                html.h3(['Ambiente']),
-                                documentRow.map(e=>{
-                                    return html.div([e.ambiente])}),
-                            ]),
-                        ])];
-                        const htmlPage=be.commonPage(req, mainContent, {})
-                        var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
-                        MiniTools.serveText(txtPage,'html')(req,res);
+                        
                     });
+                    const {rows:documentRow} = await documentQuery!;
+                    const mainContent = [html.div([
+                        html.h1(['Registro de instalación de la aplicación y del código fuente']),
+                        html.div([
+                            html.span({class:'text'},['Identificación de instalación: ']),
+                            html.span([documentRow[0].instancia]),
+                        ]),
+                        html.div([
+                            html.span({class:'text'},['Nombre de la aplicación: ']),
+                            html.span([documentRow[0].aplicacion]),
+                        ]),
+                        html.div([
+                            html.h3(['Ambiente']),
+                            documentRow.map(e=>{
+                                return html.div([e.ambiente])}),
+                        ]),
+                    ])];
+                    const htmlPage=be.commonPage(req, mainContent, baseUrl)
+                    var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
+                    MiniTools.serveText(txtPage,'html')(req,res);
                 }catch(err){
                     console.error('ERROR CON', req.headers.host, req.url)
                     var error = unexpected(err)
