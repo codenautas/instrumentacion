@@ -60,27 +60,39 @@ h4  {
     text-align: center;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 20px;
-}    
+    }    
 
-img {
+.svg-logo{
     background-color: #7092CB;
     margin-right: 10px;
+    width: 52px;
+    height: 20px;
+    fill: #ffffff;
     }
         
-
-
-@media 
-
-
-print {
+@media print {
     
     h1, h4  {
         color: #000000;
             }
     h4  {
         font-size: 15px;
-        }  
-    img {
-        display: none;
+        border-top-width: 1px;
+        border-top-color: #000000;
+        border-top-style: solid;
         }
-}
+        
+    p   {
+        font-size: auto;
+        border-top-width: 1px; 
+        border-top-color: #000000;
+        border-top-style: solid;
+        }    
+    .svg-logo{
+        fill: #000000;
+        }
+                
+    }
+
+
+
