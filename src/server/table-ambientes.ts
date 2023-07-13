@@ -7,9 +7,11 @@ export function ambientes():TableDefinition{
         editable: true,
         name: 'ambientes',
         fields: [
-            {name:'ambiente', typeName:'text',},
+            {name:'ambiente', typeName:'text'},
+            {name:'orden', typeName:'integer'},
         ],
         primaryKey: ['ambiente'],
+        sortColumns: [{column:'orden', order: 1}]
     }
     return td
 }

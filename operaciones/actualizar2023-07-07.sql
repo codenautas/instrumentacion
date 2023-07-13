@@ -26,13 +26,14 @@ set ambiente = 'capacitación'
 where ambiente in ('capacitacion');
 
 create table "ambientes" (
-  "ambiente" text
+  "ambiente" text,
+  "orden" integer
 , primary key ("ambiente")
 );
 grant select, insert, update, delete on "ambientes" to instrumentacion_admin;
 grant all on "ambientes" to instrumentacion_owner;
 
-insert into ambientes ("ambiente") values ('producción'),('prueba'),('capacitación');
+insert into ambientes ("ambiente","orden") values ("producción","1"),("prueba","2"),("capacitación","3");
 
 alter table "ambientes" add constraint "ambiente<>''" check ("ambiente"<>'');
 
