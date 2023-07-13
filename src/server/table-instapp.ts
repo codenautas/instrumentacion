@@ -30,13 +30,15 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "obs"                 , typeName: 'text'    },
         ],
         primaryKey: ['instancia','ambiente'],
+        hiddenColumns:['ambientes__orden'],
         foreignKeys:[
             {references: 'servidores'   , fields:['servidor']},
             {references: 'databases'    , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
             {references: 'aplicaciones' , fields:['aplicacion']},
             {references: 'categorias_doc' , fields:['categoria_doc']},
-            {references: 'ambientes' , fields:['ambiente']},
+            {references: 'ambientes' , fields:['ambiente'], displayFields:['orden']},
         ],
+        sortColumns:[{column:'ambientes__orden', order:1}],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
         ]
