@@ -20,6 +20,7 @@ import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
 import { areas } from './table-areas';
 import { api_calls } from './table-api_calls';
+import { ambientes } from './table-ambientes';
 import * as MiniTools from "mini-tools";
 import { unexpected } from 'cast-error';
 
@@ -184,6 +185,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'servicios', menuContent:[
                     {menuType:'table', name:'servidores'},
                     {menuType:'table', name:'databases'},
+                    {menuType:'table', name:'ambientes'},
                     {menuType:'table', name:'instapp'},
                     {menuType:'table', name:'backups'},
                     {menuType:'table', name:'motores'},
@@ -211,6 +213,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 servidores,
                 databases,
                 categorias_doc,
+                ambientes,
                 instapp,
                 backups,
                 motores,

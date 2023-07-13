@@ -12,3 +12,29 @@ alter table "instapp" add constraint "instapp categorias_doc REL" foreign key ("
 
 alter table "aplicaciones" add "descripcion" text;
 alter table "aplicaciones" add constraint "descripcion<>''" check ("descripcion"<>'');
+
+update instapp
+set ambiente = 'producción'
+where ambiente in ('producción (apagada)', 'prod', 'produc', 'produccion');
+
+update instapp
+set ambiente = 'prueba'
+where ambiente in ('evaluación', 'testing', 'testeo', 'test (apagada)', 'testeo-capacitación', 'test', 'mapa');
+
+update instapp 
+set ambiente = 'capacitación'
+where ambiente in ('capacitacion');
+
+create table "ambientes" (
+  "ambiente" text
+, primary key ("ambiente")
+);
+grant select, insert, update, delete on "ambientes" to instrumentacion_admin;
+grant all on "ambientes" to instrumentacion_owner;
+
+insert into ambientes ("ambiente") values ('producción'),('prueba'),('capacitación');
+
+alter table "ambientes" add constraint "ambiente<>''" check ("ambiente"<>'');
+
+alter table "instapp" add constraint "instapp ambientes REL" foreign key ("ambiente") references "ambientes" ("ambiente")  on update cascade;
+create index "ambiente 4 instapp IDX" ON "instapp" ("ambiente");

@@ -35,6 +35,7 @@ export function instapp(context: TableContext): TableDefinition {
             {references: 'databases'    , fields:['servidor', 'database', {source:'db_port', target:'port'}]},
             {references: 'aplicaciones' , fields:['aplicacion']},
             {references: 'categorias_doc' , fields:['categoria_doc']},
+            {references: 'ambientes' , fields:['ambiente']},
         ],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
