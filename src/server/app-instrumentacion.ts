@@ -57,13 +57,22 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
             return html.html({lang}, [
                 html.head([
-/*                     html.link({href:logo, rel:'shortcut icon', type:'image/png'}),
-                    html.link({href:logo, rel:'icon', type:'image/png'}),
-                    html.link({href:logo, rel:'apple-touch-icon'}),*/
                     html.link({rel:"stylesheet", href:`${baseUrl}/css/common-inst.css`}), 
                 ]),
-                html.body({class:'brand-page'},[ 
-                    content
+                html.body([ 
+                    html.div({class: 'felx-conteiner'},[
+                        html.div({class: 'flex-item caja-izq'}),
+                        html.div({class: 'flex-item caja-cen'}, [
+                            html.h1(['Registro de instalación de la aplicación y del código fuente']),
+                            content,
+                            html.br(),
+                            html.h4([
+                                html.img({class: 'img-transparent', src: `${baseUrl}/img/logo01.svg`}),
+                                [' Dirección General de Estadistica y Censos | Proyectos Especiales Informaticos']
+                            ])
+                        ]),
+                        html.div({class: 'flex-item caja-der'}),
+                    ])
                 ])
             ])
         }
@@ -108,27 +117,50 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     let documentQuery;
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
-                            select * from instapp where instancia = $1
+                            select ia.instancia as instancia, ia.aplicacion as aplicacion, ia.ambiente as ambiente, a.descripcion as a_descripcion, 
+                            ia.servidor as servidor, ia.database as database, ia.base_url as base_url
+                            from instapp ia 
+                            inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
+                            where ia.instancia = $1
                         `,[req.params.instancia]).fetchAll();
                         
                     });
                     const {rows:documentRow} = await documentQuery!;
-                    const mainContent = [html.div([
-                        html.h1(['Registro de instalación de la aplicación y del código fuente']),
-                        html.div([
-                            html.span({class:'text'},['Identificación de instalación: ']),
-                            html.span([documentRow[0].instancia]),
-                        ]),
-                        html.div([
-                            html.span({class:'text'},['Nombre de la aplicación: ']),
-                            html.span([documentRow[0].aplicacion]),
-                        ]),
-                        html.div([
+                    const documentR = documentRow[0];
+
+                    const mainContent = html.p([
+                        
+                            html.b(['Identificación de instalación: ']),
+                            html.span([documentR.instancia]),
+                            html.br(),
+                            html.b(['Ambiente de instalación: ']),
+                            html.span([documentR.ambiente]),
+                            html.br(),
+                            html.b(['Fecha de instalación: ']),
+                            html.span([documentR.instancia]),
+                            html.br(),
+                            html.b(['Nombre de la aplicación: ']),
+                            html.span([documentR.aplicacion]),
+                            html.br(),
+                            html.b(['Descripción de aplicación: ']),
+                            html.span([documentR.descripcion]),
+                            html.br(),
+                            html.b(['Servidor: ']),
+                            html.span([documentR.servidor]),
+                            html.br(),
+                            html.b(['Base de datos: ']),
+                            html.span([documentR.database]),
+                            html.br(),
+                            html.b(['Base url: ']),
+                            html.span([documentR.base_url]),
+                            html.br(),
+                            /* html.div([
                             html.h3(['Ambiente']),
                             documentRow.map(e=>{
-                                return html.div([e.ambiente])}),
-                        ]),
-                    ])];
+                                return html.div([e.ambiente])
+                            }),
+                        ]), */
+                    ]);
                     const htmlPage=be.commonPage(req, mainContent, baseUrl)
                     var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
                     MiniTools.serveText(txtPage,'html')(req,res);
