@@ -119,7 +119,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
                             select ia.instancia as instancia, ia.aplicacion as aplicacion, ia.ambiente as ambiente, a.descripcion as a_descripcion, 
-                            ia.servidor as servidor, ia.database as database, ia.base_url as base_url
+                            ia.database as database, ia.base_url as base_url, ia.fecha_instalacion as fecha_instalacion, a.git_host as git_host, a.git_group as git_group, 
+                            a.git_project as git_project, ia.motor as motor
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             where ia.instancia = $1
@@ -129,39 +130,46 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     const {rows:documentRow} = await documentQuery!;
                     const documentR = documentRow[0];
 
-                    const mainContent = html.p([
-                        
-                            html.b(['Identificación de instalación: ']),
-                            html.span([documentR.instancia]),
-                            html.br(),
+                    const mainContent = [
+                        html.b(['Identificación de instalación: ']),
+                        html.span([documentR.instancia]),
+                        html.div([
                             html.b(['Ambiente de instalación: ']),
                             html.span([documentR.ambiente]),
                             html.br(),
                             html.b(['Fecha de instalación: ']),
-                            html.span([documentR.instancia]),
+                            html.span([`${documentR.fecha_instalacion.toLocaleDateString()}`]),
                             html.br(),
-                            html.b(['Nombre de la aplicación: ']),
-                            html.span([documentR.aplicacion]),
-                            html.br(),
-                            html.b(['Descripción de aplicación: ']),
-                            html.span([documentR.descripcion]),
-                            html.br(),
-                            html.b(['Servidor: ']),
-                            html.span([documentR.servidor]),
-                            html.br(),
-                            html.b(['Base de datos: ']),
-                            html.span([documentR.database]),
-                            html.br(),
-                            html.b(['Base url: ']),
-                            html.span([documentR.base_url]),
-                            html.br(),
-                            /* html.div([
-                            html.h3(['Ambiente']),
-                            documentRow.map(e=>{
-                                return html.div([e.ambiente])
-                            }),
-                        ]), */
-                    ]);
+                            html.h2(['Aplicación']),
+                            html.ul([
+                                html.li([
+                                    html.b(['Nombre de la aplicación: ']),
+                                    html.span([documentR.aplicacion]),
+                                ]),
+                                html.li([
+                                    html.b(['Descripción de la aplicación: ']),
+                                    html.span([documentR.descripcion]),
+                                ]),
+                                html.li([
+                                    html.b(['Repositorio: ']),
+                                    html.span([`${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`]),
+                                ]),
+                            ]),
+                            html.h2(['Características del sistema y del código fuente']),
+                            html.ul([
+                                html.li([
+                                    html.b(['Motor: ']),
+                                    html.span([documentR.motor]),
+                                ]),
+                            ]),
+                        ]),
+                    ];
+                    /* html.div([
+                        html.h3(['Ambiente']),
+                        documentRow.map(e=>{
+                            return html.div([e.ambiente])
+                        }),
+                    ]), */
                     const htmlPage=be.commonPage(req, mainContent, baseUrl)
                     var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
                     MiniTools.serveText(txtPage,'html')(req,res);
