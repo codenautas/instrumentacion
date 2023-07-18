@@ -13,6 +13,7 @@ import { user_agents } from './table-user_agents';
 import { servidores } from './table-servidores';
 import { databases } from './table-databases';
 import { instapp } from './table-instapp';
+import { operativos } from './table-operativos';
 import { backups } from './table-backups';
 import { motores } from './table-motores';
 import { categorias_doc } from './table-categorias_doc';
@@ -121,19 +122,20 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
             });
-            mainApp.get(baseUrl+`/documentacion/:instancia`,async function(req:Request, res:Response, _next:NextFunction){
+            mainApp.get(baseUrl+`/documentacion/:operativo/:periodo`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
                     let documentQuery;
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
-                            select ia.instancia as instancia, ia.aplicacion as aplicacion, ia.ambiente as ambiente, a.descripcion as a_descripcion, 
-                            ia.database as database, ia.base_url as base_url, ia.fecha_instalacion as fecha_instalacion, a.git_host as git_host, a.git_group as git_group, 
-                            a.git_project as git_project, ia.motor as motor
+                            select ia.instancia, ia.aplicacion, ia.ambiente, a.descripcion, 
+                            ia.database, ia.base_url, ia.fecha_instalacion, a.git_host, a.git_group, 
+                            a.git_project, ia.motor, ope.periodo, ia.operativo, 
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
-                            where ia.instancia = $1
-                        `,[req.params.instancia]).fetchAll();
+                            inner join operativos ope on (ope.operativo = ia.operativo)
+                            where ia.operativo = $1
+                        `,[req.params.operativo]).fetchAll();
                         
                     });
                     const {rows:documentRow} = await documentQuery!;
@@ -195,24 +197,25 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         getMenu():backendPlus.MenuDefinition{
             let myMenuPart:backendPlus.MenuInfo[]=[
                 {menuType:'menu', name:'puestos', menuContent:[
-                    {menuType:'table', name:'ubicaciones'},
                     {menuType:'table', name:'ip'},
+                    {menuType:'table', name:'ubicaciones'},
                     {menuType:'table', name:'user_agents'},
                 ]}, 
                 {menuType:'menu', name:'servicios', menuContent:[
-                    {menuType:'table', name:'servidores'},
-                    {menuType:'table', name:'databases'},
                     {menuType:'table', name:'ambientes'},
-                    {menuType:'table', name:'instapp'},
-                    {menuType:'table', name:'backups'},
-                    {menuType:'table', name:'motores'},
                     {menuType:'table', name:'aplicaciones'},
-                    {menuType:'table', name:'productos'},
                     {menuType:'table', name:'areas'}
+                    {menuType:'table', name:'backups'},
+                    {menuType:'table', name:'databases'},
+                    {menuType:'table', name:'instapp'},
+                    {menuType:'table', name:'motores'},
+                    {menuType:'table', name:'operativos'},
+                    {menuType:'table', name:'productos'},
+                    {menuType:'table', name:'servidores'},
                 ]}, 
                 {menuType:'menu', name:'provisorio', menuContent:[
-                    {menuType:'table', name:'api_calls'},
                     {menuType:'proc', name:'api_call'},
+                    {menuType:'table', name:'api_calls'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -231,6 +234,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 databases,
                 categorias_doc,
                 ambientes,
+                operativos,
                 instapp,
                 backups,
                 motores,
