@@ -64,13 +64,22 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     html.div({class: 'felx-conteiner'},[
                         html.div({class: 'flex-item caja-izq'}),
                         html.div({class: 'flex-item caja-cen'}, [
-                            html.h1(['Registro de instalación de la aplicación y del código fuente']),
-                            content,
-                            html.br(),
-                            html.h4([
-                                html.img({class: 'img-transparent', src: `${baseUrl}/img/logo01.svg`}),
-                                [' Dirección General de Estadistica y Censos | Proyectos Especiales Informaticos']
+                            html.div({class:'contenido'},[
+                                html.header({class:'header'},[
+                                    html.h1(['Registro de instalación de la aplicación y del código fuente'])
+                                ]),
+                                html.div({class:'desarrollo-texto'},[
+                                    content
+                                ]),
+                                html.footer({class:'footer'},[
+                                    html.h4([
+                                        html.img({class: 'svglog', src: `${baseUrl}/img/logest.svg`}),
+                                        [' Dirección General de Estadistica y Censos | Proyectos Especiales Informaticos '],
+                                        html.img({class: 'svglog', src: `${baseUrl}/img/logba.svg`}),
+                                    ])
+                                ])
                             ])
+                            
                         ]),
                         html.div({class: 'flex-item caja-der'}),
                     ])
@@ -131,38 +140,38 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     const documentR = documentRow[0];
 
                     const mainContent = [
-                        html.b(['Identificación de instalación: ']),
-                        html.span([documentR.instancia]),
+                        html.div([
+                            html.b(['Identificación de instalación: ']),
+                            [ documentR.instancia]
+                        ]),
                         html.div([
                             html.b(['Ambiente de instalación: ']),
-                            html.span([documentR.ambiente]),
-                            html.br(),
+                            [ documentR.ambiente],                            
                             html.b(['Fecha de instalación: ']),
-                            html.span([`${documentR.fecha_instalacion.toLocaleDateString()}`]),
-                            html.br(),
+                            [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                             html.h2(['Aplicación']),
                             html.ul([
                                 html.li([
                                     html.b(['Nombre de la aplicación: ']),
-                                    html.span([documentR.aplicacion]),
+                                    [ documentR.aplicacion],
                                 ]),
                                 html.li([
                                     html.b(['Descripción de la aplicación: ']),
-                                    html.span([documentR.descripcion]),
+                                    [ documentR.descripcion],
                                 ]),
                                 html.li([
                                     html.b(['Repositorio: ']),
-                                    html.span([`${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`]),
+                                    [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
                                 ]),
                             ]),
                             html.h2(['Características del sistema y del código fuente']),
                             html.ul([
                                 html.li([
                                     html.b(['Motor: ']),
-                                    html.span([documentR.motor]),
+                                    [ documentR.motor],
                                 ]),
                             ]),
-                        ]),
+                        ]),                                                   
                     ];
                     /* html.div([
                         html.h3(['Ambiente']),
