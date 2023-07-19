@@ -27,3 +27,18 @@ alter table "instapp" add constraint "operativo<>''" check ("operativo"<>'');
 alter table "instapp" add constraint "instapp operativos REL" foreign key ("operativo") references "operativos" ("operativo")  on update cascade;
 
 create index "operativo 4 instapp IDX" ON "instapp" ("operativo");
+
+create table "uso" (
+  "uso" text
+, primary key ("uso")
+);
+grant select, insert, update, delete on "uso" to instrumentacion_admin;
+grant all on "uso" to instrumentacion_owner;
+
+insert into "uso" ("uso") values
+('sistema central'),
+('dispositivos móviles');
+
+alter table "uso" add constraint "uso<>''" check ("uso"<>'');
+alter table "instapp" add constraint "instapp uso REL" foreign key ("uso") references "uso" ("uso")  on update cascade;
+create index "uso 4 instapp IDX" ON "instapp" ("uso");
