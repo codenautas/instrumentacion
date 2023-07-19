@@ -39,6 +39,7 @@ export function instapp(context: TableContext): TableDefinition {
             {references: 'aplicaciones' , fields:['aplicacion']},
             {references: 'categorias_doc' , fields:['categoria_doc']},
             {references: 'operativos' , fields:['operativo']},
+            {references: 'uso' , fields:['uso']},
             {references: 'ambientes' , fields:['ambiente'], displayFields:['orden']},
         ],
         sortColumns:[{column:'ambientes__orden', order:1},{column:'fecha_instalacion', order:-1}],

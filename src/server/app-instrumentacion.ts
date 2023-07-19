@@ -13,6 +13,7 @@ import { user_agents } from './table-user_agents';
 import { servidores } from './table-servidores';
 import { databases } from './table-databases';
 import { instapp } from './table-instapp';
+import { uso } from './table-uso';
 import { operativos } from './table-operativos';
 import { backups } from './table-backups';
 import { motores } from './table-motores';
@@ -122,15 +123,16 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
             });
-            mainApp.get(baseUrl+`/documentacion/:operativo/:periodo`,async function(req:Request, res:Response, _next:NextFunction){
+            mainApp.get(baseUrl+`/documentacion/:operativo`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
                     let documentQuery;
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
-                            select ia.instancia, ia.aplicacion, ia.ambiente, a.descripcion, 
-                            ia.database, ia.base_url, ia.fecha_instalacion, a.git_host, a.git_group, 
-                            a.git_project, ia.motor, ope.periodo, ia.operativo, 
+                            select 
+                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, 
+                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
+                            ope.periodo
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             inner join operativos ope on (ope.operativo = ia.operativo)
@@ -143,14 +145,14 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
 
                     const mainContent = [
                         html.div([
-                            html.b(['Identificación de instalación: ']),
-                            [ documentR.instancia]
+                            html.b(['Operativo: ']),
+                            [ documentR.operativo],
+                            html.b(['Pase a producción: ']),
+                            [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                         ]),
                         html.div([
                             html.b(['Ambiente de instalación: ']),
                             [ documentR.ambiente],                            
-                            html.b(['Fecha de instalación: ']),
-                            [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                             html.h2(['Aplicación']),
                             html.ul([
                                 html.li([
@@ -169,8 +171,20 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             html.h2(['Características del sistema y del código fuente']),
                             html.ul([
                                 html.li([
-                                    html.b(['Motor: ']),
-                                    [ documentR.motor],
+                                    html.b(['Lenguaje de programación: ']),
+                                    [ documentR.lenguaje],
+                                ]),
+                                html.li([
+                                    html.b(['Capacidad operativa: ']),
+                                    [ documentR.capac_ope],
+                                ]),
+                                html.li([
+                                    html.b(['Base de datos: ']),
+                                    [ documentR.tipo_db],
+                                ]),
+                                html.li([
+                                    html.b(['Tecnologías: ']),
+                                    [ documentR.tecnologias],
                                 ]),
                             ]),
                         ]),                                                   
@@ -235,6 +249,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 categorias_doc,
                 ambientes,
                 operativos,
+                uso,
                 instapp,
                 backups,
                 motores,
