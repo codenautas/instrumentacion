@@ -131,12 +131,13 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         documentQuery = client.query(`
                             select 
                             ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, 
-                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
-                            ope.periodo
+                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias                            
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             inner join operativos ope on (ope.operativo = ia.operativo)
+                            inner join ambientes amb on (amb.ambiente = ia.ambiente)
                             where ia.operativo = $1
+                            order by amb.orden asc
                         `,[req.params.operativo]).fetchAll();
                         
                     });
@@ -150,9 +151,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             html.b(['Pase a producción: ']),
                             [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                         ]),
-                        html.div([
-                            html.b(['Ambiente de instalación: ']),
-                            [ documentR.ambiente],                            
+                        html.div([                   
                             html.h2(['Aplicación']),
                             html.ul([
                                 html.li([
@@ -167,6 +166,12 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                                     html.b(['Repositorio: ']),
                                     [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
                                 ]),
+                            ]),
+                            html.h2(['Urls de Acceso']),
+                            html.ul([
+                                    documentRow.map(e=>{
+                                        return html.li([e.ambiente,' ',e.uso, ' ', e.base_url])
+                                    }),
                             ]),
                             html.h2(['Características del sistema y del código fuente']),
                             html.ul([
@@ -188,13 +193,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                                 ]),
                             ]),
                         ]),                                                   
-                    ];
-                    /* html.div([
-                        html.h3(['Ambiente']),
-                        documentRow.map(e=>{
-                            return html.div([e.ambiente])
-                        }),
-                    ]), */
+                    ];                    
                     const htmlPage=be.commonPage(req, mainContent, baseUrl)
                     var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
                     MiniTools.serveText(txtPage,'html')(req,res);
@@ -226,6 +225,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'operativos'},
                     {menuType:'table', name:'productos'},
                     {menuType:'table', name:'servidores'},
+                    {menuType:'table', name:'uso'},
                 ]}, 
                 {menuType:'menu', name:'provisorio', menuContent:[
                     {menuType:'proc', name:'api_call'},
