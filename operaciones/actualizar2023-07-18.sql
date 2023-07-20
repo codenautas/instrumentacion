@@ -42,3 +42,8 @@ insert into "uso" ("uso") values
 alter table "uso" add constraint "uso<>''" check ("uso"<>'');
 alter table "instapp" add constraint "instapp uso REL" foreign key ("uso") references "uso" ("uso")  on update cascade;
 create index "uso 4 instapp IDX" ON "instapp" ("uso");
+
+alter table "operativos" add column "annio" integer;
+alter table "operativos" add column "onda" text;
+alter table "operativos" drop constraint "periodo<>''";
+alter table "operativos" drop "periodo";
