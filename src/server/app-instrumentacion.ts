@@ -61,6 +61,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             return html.html({lang}, [
                 html.head([
                     html.link({rel:"stylesheet", href:`${baseUrl}/css/common-inst.css`}), 
+                    html.link({rel:"stylesheet", href:`${baseUrl}/css/tipografia.css`}), 
                 ]),
                 html.body([ 
                     html.div({class: 'felx-conteiner'},[
@@ -123,77 +124,91 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
             });
-            mainApp.get(baseUrl+`/documentacion/:operativo`,async function(req:Request, res:Response, _next:NextFunction){
+            mainApp.get(baseUrl+`/documentacion`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
-                    let documentQuery;
+                    let documentQuery:any;
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
                             select 
-                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, 
+                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, ia.uso,
                             a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias                            
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             inner join operativos ope on (ope.operativo = ia.operativo)
-                            inner join ambientes amb on (amb.ambiente = ia.ambiente)
-                            where ia.operativo = $1
-                            order by amb.orden asc
-                        `,[req.params.operativo]).fetchAll();
+                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                            
+                            order by amb.orden asc, a.aplicacion desc, ope.operativo desc
+                        `,[]).fetchAll();
                         
                     });
                     const {rows:documentRow} = await documentQuery!;
-                    const documentR = documentRow[0];
+                    
+                    const groupBy = (objectArray:any, property:any)=>{
+  
+                        return objectArray.reduce((acc:any, obj:any) => {
+                          const key = obj[property];
+                          const curGroup = acc[key] ?? [];
+                      
+                          return { ...acc, [key]: [...curGroup, obj] };
+                        }, {});
+                      
+                    }
 
-                    const mainContent = [
-                        html.div([
-                            html.b(['Operativo: ']),
-                            [ documentR.operativo],
-                            html.b(['Pase a producción: ']),
-                            [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
-                        ]),
-                        html.div([                   
-                            html.h2(['Aplicación']),
-                            html.ul([
-                                html.li([
-                                    html.b(['Nombre de la aplicación: ']),
-                                    [ documentR.aplicacion],
-                                ]),
-                                html.li([
-                                    html.b(['Descripción de la aplicación: ']),
-                                    [ documentR.descripcion],
-                                ]),
-                                html.li([
-                                    html.b(['Repositorio: ']),
-                                    [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
-                                ]),
+                    const documents = groupBy(documentRow,'operativo');
+                    let mainContent:HtmlTag<any>[] = [];
+                    Object.keys(documents).forEach(key => {
+                        const operativo = documents[key]
+                        const documentR = operativo[0];
+                        const content = [
+                            html.h2([
+                                html.b(['Operativo: ']),
+                                [ documentR.operativo],
+                                html.b(['Pase a producción: ']),
+                                [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                             ]),
-                            html.h2(['Urls de Acceso']),
-                            html.ul([
-                                    documentRow.map(e=>{
-                                        return html.li([e.ambiente,' ',e.uso, ' ', e.base_url])
-                                    }),
-                            ]),
-                            html.h2(['Características del sistema y del código fuente']),
-                            html.ul([
-                                html.li([
-                                    html.b(['Lenguaje de programación: ']),
-                                    [ documentR.lenguaje],
+                            html.div([                   
+                                html.h3(['Aplicación']),
+                                html.ul([
+                                    html.li([
+                                        html.b(['Nombre de la aplicación: ']),
+                                        [ documentR.aplicacion],
+                                    ]),
+                                    html.li([
+                                        html.b(['Descripción de la aplicación: ']),
+                                        [ documentR.descripcion],
+                                    ]),
+                                    html.li([
+                                        html.b(['Repositorio: ']),
+                                        [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
+                                    ]),
                                 ]),
-                                html.li([
-                                    html.b(['Capacidad operativa: ']),
-                                    [ documentR.capac_ope],
+                                html.h3(['Urls de Acceso']),
+                                html.ul([
+                                        operativo.map((e:any)=>(html.li([e.ambiente,' ',e.uso, ' ', e.base_url]))),
                                 ]),
-                                html.li([
-                                    html.b(['Base de datos: ']),
-                                    [ documentR.tipo_db],
+                                html.h3(['Características del sistema y del código fuente']),
+                                html.ul([
+                                    html.li([
+                                        html.b(['Lenguaje de programación: ']),
+                                        [ documentR.lenguaje],
+                                    ]),
+                                    html.li([
+                                        html.b(['Capacidad operativa: ']),
+                                        [ documentR.capac_ope],
+                                    ]),
+                                    html.li([
+                                        html.b(['Base de datos: ']),
+                                        [ documentR.tipo_db],
+                                    ]),
+                                    html.li([
+                                        html.b(['Tecnologías: ']),
+                                        [ documentR.tecnologias],
+                                    ]),
                                 ]),
-                                html.li([
-                                    html.b(['Tecnologías: ']),
-                                    [ documentR.tecnologias],
-                                ]),
-                            ]),
-                        ]),                                                   
-                    ];                    
+                            ]),                                                   
+                        ];
+                        mainContent = [...mainContent, ...content]
+                    });                
                     const htmlPage=be.commonPage(req, mainContent, baseUrl)
                     var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
                     MiniTools.serveText(txtPage,'html')(req,res);
@@ -217,7 +232,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'servicios', menuContent:[
                     {menuType:'table', name:'ambientes'},
                     {menuType:'table', name:'aplicaciones'},
-                    {menuType:'table', name:'areas'}
+                    {menuType:'table', name:'areas'},
                     {menuType:'table', name:'backups'},
                     {menuType:'table', name:'databases'},
                     {menuType:'table', name:'instapp'},
