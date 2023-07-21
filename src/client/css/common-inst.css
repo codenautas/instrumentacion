@@ -87,6 +87,12 @@ h4  {
     font-size: 20px;
     font-weight: 700;
     text-align: center;}
+h3  {
+    font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: left;
+}
 
 p   {
     padding-top: 20px;
@@ -127,6 +133,12 @@ b   {
         border-top-width: 1px;
         border-top-color: #000000;
         border-top-style: solid;
+        }
+        h3  {
+            font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: left;
         }
     .header{
         margin: 0px;
