@@ -64,7 +64,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     html.link({rel:"stylesheet", href:`${baseUrl}/css/tipografia.css`}), 
                 ]),
                 html.body([ 
-                    html.div({class: 'felx-conteiner'},[
+                    html.div({class: 'flex-conteiner'},[
                         html.div({class: 'flex-item caja-izq'}),
                         html.div({class: 'flex-item caja-cen'}, [
                             html.div({class:'contenido'},[
