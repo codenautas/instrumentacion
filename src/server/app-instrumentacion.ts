@@ -142,6 +142,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         
                     });
                     const {rows:documentRow} = await documentQuery!;
+                    if(documentRow.length===0) throw new Error('No hay operativos');
+                    
                     
                     const groupBy = (objectArray:any, property:any)=>{
   
@@ -159,13 +161,14 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     Object.keys(documents).forEach(key => {
                         const operativo = documents[key]
                         const documentR = operativo[0];
-                        const content = [
+                        const content:HtmlTag<any>[] = [
                             html.h2([
                                 html.b(['Operativo: ']),
                                 [ documentR.operativo],
-                                html.b(['Pase a producción: ']),
-                                [ `${documentR.fecha_instalacion.toLocaleDateString()}`],
                             ]),
+                            html.b(['Pase a producción: ']),
+                            html.span([`${documentR.fecha_instalacion.toLocaleDateString()}`]),
+                            html.br(),
                             html.div([                   
                                 html.h3(['Aplicación']),
                                 html.ul([
@@ -207,7 +210,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                                 ]),
                             ]),                                                   
                         ];
-                        mainContent = [...mainContent, ...content]
+                        mainContent = [...mainContent, ...content, html.br()]
                     });                
                     const htmlPage=be.commonPage(req, mainContent, baseUrl)
                     var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
