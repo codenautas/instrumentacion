@@ -55,8 +55,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             this.setStaticConfig(defConfig);
         }
 
-        commonPage(req:Request, content:HtmlTag<any>[], baseUrl:String/* , opts:{img?:string} */){
-            //var logo = opts.img?.endsWith('.png') ? opts.img : 'img/logo-128.png';
+        commonPage(req:Request, content:HtmlTag<any>[]){
+            
+            let baseUrl = `${this.app.path()}/client`;
             var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
             return html.html({lang}, [
                 html.head([
@@ -77,7 +78,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                                 html.footer({class:'footer'},[
                                     html.h4([
                                         html.img({class: 'svglog', src: `${baseUrl}/img/logest.svg`}),
-                                        [' Dirección General de Estadistica y Censos | Proyectos Especiales Informaticos '],
+                                        [' Departamento de Proyectos Especiales '],
                                         html.img({class: 'svglog', src: `${baseUrl}/img/logba.svg`}),
                                     ])
                                 ])
@@ -88,6 +89,148 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     ])
                 ])
             ])
+        }
+        
+        groupBy = (objectArray:any, property:any)=>{
+
+            return objectArray.reduce((acc:any, obj:any) => {
+              const key = obj[property];
+              const curGroup = acc[key] ?? [];
+          
+              return { ...acc, [key]: [...curGroup, obj] };
+            }, {});
+          
+        }
+
+        contentPage(documentRow:any){
+
+            const documents = this.groupBy(documentRow,'operativo');
+            let mainContent:HtmlTag<any>[] = [];
+            const elementOperativo = (title:String, result:any)=>{
+                if(!!result){
+                    return html.div([
+                        html.b([title]),
+                        [ `${result}`],
+                    ]);
+                }else{
+                    return html.div()
+                }
+            }
+            const elementLi = (documentR:any)=>{
+                let arr = [];
+                if(!!documentR.aplicacion){
+                    arr.push(
+                        html.li([
+                            html.b(['Nombre de la aplicación: ']),
+                            [ `${documentR.aplicacion}`],
+                        ])
+                    );
+                }
+                if(!!documentR.descripcion){
+                    arr.push(
+                        html.li([
+                            html.b(['Descripción de la aplicación: ']),
+                            [ documentR.descripcion],
+                        ])
+                    );
+                }
+                if(!!documentR.git_host || !!documentR.git_group || documentR.git_project){
+                    arr.push(html.li([
+                        html.b(['Repositorio: ']),
+                        [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
+                    ])
+                    );
+                }
+                return arr;
+            }
+            const elementCaracteristicas = (documentR:any)=>{
+                let arr = [];
+                (!!documentR.lenguaje) && arr.push(html.li([
+                    html.b(['Lenguaje de programación: ']),
+                    [ documentR.lenguaje],
+                ]));
+                
+                (!!documentR.capac_ope) && arr.push(html.li([
+                    html.b(['Capacidad operativa: ']),
+                    [ documentR.capac_ope],
+                ]));
+                (!!documentR.tipo_db) && arr.push(html.li([
+                    html.b(['Base de datos: ']),
+                    [ documentR.tipo_db],
+                ]));
+                (!!documentR.tecnologias) && arr.push(html.li([
+                    html.b(['Tecnologías: ']),
+                    [ documentR.tecnologias],
+                ]));
+                return arr;
+            }
+            Object.keys(documents).forEach(key => {
+                const operativo = documents[key]
+                const documentR = operativo[0];
+                const content:HtmlTag<any>[] = [
+                    html.h2([
+                        html.b(['Operativo: ']),
+                        [ documentR.operativo],
+                    ]),
+                    elementOperativo('Pase a Producción: ', documentR.fecha_instalacion.toLocaleDateString()),
+                    elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
+                    elementOperativo('Año del Operativo: ', documentR.ope_annio),
+                    elementOperativo('Descripción del Operativo: ', documentR.ope_desc),
+                    elementOperativo('Onda del Operativo: ', documentR.ope_onda),
+                    html.div([                   
+                        html.h3(['Aplicación']),
+                        html.ul(elementLi(documentR)),
+                        html.h3(['Urls de Acceso']),
+                        html.ul([
+                            operativo.map((e:any)=>{
+                                const element = html.li([e.ambiente,' ',e.uso, ' ', e.base_url]);
+                                return (element);
+                            }),
+                        ]),
+                        html.h3(['Características del sistema y del código fuente']),
+                        html.ul(elementCaracteristicas(documentR)),
+                    ]),                                                   
+                ];
+                mainContent = [...mainContent, ...content, html.br()]
+            }); 
+            return mainContent;
+        }
+
+        addLoggedServices():void{
+            let be = this;
+            super.addLoggedServices();
+            be.app.get(`/documentacion`,async function(req:Request, res:Response, _next:NextFunction){
+                try{
+                    let documentQuery:any;
+                    await be.inDbClient(req, async function(client){                        
+                        documentQuery = client.query(`
+                            select 
+                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, ia.uso,
+                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
+                            ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda
+                            from instapp ia 
+                            inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
+                            inner join operativos ope on (ope.operativo = ia.operativo)
+                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                            
+                            order by amb.orden asc, a.aplicacion desc, ope.operativo desc
+                        `,[]).fetchAll();
+                        
+                    });
+                    const {rows:documentRow} = await documentQuery!;
+                    if(documentRow.length===0) throw new Error('No hay operativos');
+
+                    const htmlPage=be.commonPage(req, be.contentPage(documentRow));
+                    const txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
+                    MiniTools.serveText(txtPage,'html')(req,res);
+                }catch(err){
+                    console.error('ERROR CON', req.headers.host, req.url)
+                    var error = unexpected(err)
+                    error.code = error.code || '500';
+                    error.message = req.params.nickname + ': ' + error.message;
+                    MiniTools.serveErr(req, res, _next)(error);
+                }
+            });
+            
         }
 
         addUnloggedServices(mainApp:ExpressPlus, baseUrl:string):void{
@@ -124,105 +267,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }).catch(err=>res.end(html.pre(err.message).toHtmlText({},{})));
                 res.end();
             });
-            mainApp.get(baseUrl+`/documentacion`,async function(req:Request, res:Response, _next:NextFunction){
-                try{
-                    // var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
-                    let documentQuery:any;
-                    await be.inDbClient(req, async function(client){                        
-                        documentQuery = client.query(`
-                            select 
-                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, ia.uso,
-                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias                            
-                            from instapp ia 
-                            inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
-                            inner join operativos ope on (ope.operativo = ia.operativo)
-                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                            
-                            order by amb.orden asc, a.aplicacion desc, ope.operativo desc
-                        `,[]).fetchAll();
-                        
-                    });
-                    const {rows:documentRow} = await documentQuery!;
-                    if(documentRow.length===0) throw new Error('No hay operativos');
-                    
-                    
-                    const groupBy = (objectArray:any, property:any)=>{
-  
-                        return objectArray.reduce((acc:any, obj:any) => {
-                          const key = obj[property];
-                          const curGroup = acc[key] ?? [];
-                      
-                          return { ...acc, [key]: [...curGroup, obj] };
-                        }, {});
-                      
-                    }
-
-                    const documents = groupBy(documentRow,'operativo');
-                    let mainContent:HtmlTag<any>[] = [];
-                    Object.keys(documents).forEach(key => {
-                        const operativo = documents[key]
-                        const documentR = operativo[0];
-                        const content:HtmlTag<any>[] = [
-                            html.h2([
-                                html.b(['Operativo: ']),
-                                [ documentR.operativo],
-                            ]),
-                            html.b(['Pase a producción: ']),
-                            html.span([`${documentR.fecha_instalacion.toLocaleDateString()}`]),
-                            html.br(),
-                            html.div([                   
-                                html.h3(['Aplicación']),
-                                html.ul([
-                                    html.li([
-                                        html.b(['Nombre de la aplicación: ']),
-                                        [ documentR.aplicacion],
-                                    ]),
-                                    html.li([
-                                        html.b(['Descripción de la aplicación: ']),
-                                        [ documentR.descripcion],
-                                    ]),
-                                    html.li([
-                                        html.b(['Repositorio: ']),
-                                        [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
-                                    ]),
-                                ]),
-                                html.h3(['Urls de Acceso']),
-                                html.ul([
-                                        operativo.map((e:any)=>(html.li([e.ambiente,' ',e.uso, ' ', e.base_url]))),
-                                ]),
-                                html.h3(['Características del sistema y del código fuente']),
-                                html.ul([
-                                    html.li([
-                                        html.b(['Lenguaje de programación: ']),
-                                        [ documentR.lenguaje],
-                                    ]),
-                                    html.li([
-                                        html.b(['Capacidad operativa: ']),
-                                        [ documentR.capac_ope],
-                                    ]),
-                                    html.li([
-                                        html.b(['Base de datos: ']),
-                                        [ documentR.tipo_db],
-                                    ]),
-                                    html.li([
-                                        html.b(['Tecnologías: ']),
-                                        [ documentR.tecnologias],
-                                    ]),
-                                ]),
-                            ]),                                                   
-                        ];
-                        mainContent = [...mainContent, ...content, html.br()]
-                    });                
-                    const htmlPage=be.commonPage(req, mainContent, baseUrl)
-                    var txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
-                    MiniTools.serveText(txtPage,'html')(req,res);
-                }catch(err){
-                    console.error('ERROR CON', req.headers.host, req.url)
-                    var error = unexpected(err)
-                    error.code = error.code || '500';
-                    error.message = req.params.nickname + ': ' + error.message;
-                    MiniTools.serveErr(req, res, _next)(error);
-                }
-            });
+            
         }
 
         getMenu():backendPlus.MenuDefinition{

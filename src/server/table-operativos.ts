@@ -7,9 +7,11 @@ export function operativos():TableDefinition{
         editable: true,
         name: 'operativos',
         fields: [
-            {name:'operativo'   , typeName:'text'       },
-            {name:'annio'       , typeName:'integer'    },
-            {name:'onda'        , typeName:'text'       },
+            {name:'operativo'       , typeName:'text'       },
+            {name:'nombre'          , typeName:'text'       },
+            {name:'descripcion'     , typeName:'text'       , title:'descripción'   },
+            {name:'annio'           , typeName:'integer'    , title:'año'           },
+            {name:'onda'            , typeName:'text'       },
         ],
         primaryKey: ['operativo'],
     }
