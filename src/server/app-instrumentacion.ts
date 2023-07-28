@@ -92,22 +92,20 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         }
         
         groupBy = (objectArray:any, property:any)=>{
-
             return objectArray.reduce((acc:any, obj:any) => {
               const key = obj[property];
               const curGroup = acc[key] ?? [];
-          
               return { ...acc, [key]: [...curGroup, obj] };
             }, {});
-          
         }
 
         contentPage(documentRow:any){
 
             const documents = this.groupBy(documentRow,'operativo');
             let mainContent:HtmlTag<any>[] = [];
-            const elementOperativo = (title:String, result:any)=>{
+            const elementOperativo = (title:String, result:any, isDate:boolean =false)=>{
                 if(!!result){
+                    isDate && (result = result.toLocaleDateString());
                     return html.div([
                         html.b([title]),
                         [ `${result}`],
@@ -116,6 +114,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     return html.div()
                 }
             }
+            
             const elementLi = (documentR:any)=>{
                 let arr = [];
                 if(!!documentR.aplicacion){
@@ -172,7 +171,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         html.b(['Operativo: ']),
                         [ documentR.operativo],
                     ]),
-                    elementOperativo('Pase a Producción: ', documentR.fecha_instalacion.toLocaleDateString()),
+                    elementOperativo('Pase a Producción: ', documentR.fecha_instalacion, true),
                     elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
                     elementOperativo('Año del Operativo: ', documentR.ope_annio),
                     elementOperativo('Descripción del Operativo: ', documentR.ope_desc),
@@ -211,8 +210,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             from instapp ia 
                             inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             inner join operativos ope on (ope.operativo = ia.operativo)
-                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                            
-                            order by amb.orden asc, a.aplicacion desc, ope.operativo desc
+                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                          
+                            order by amb.orden asc, ope.operativo desc, a.aplicacion desc
                         `,[]).fetchAll();
                         
                     });
