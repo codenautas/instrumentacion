@@ -14,6 +14,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "ip"                 , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
+            { name: "base_url"           , typeName: 'text'    },
             { name: "pw"                 , typeName: 'text'    },
             { name: "infodisk"           , typeName: 'text'    , label:"df -h"},
             { name: "server_engine"      , typeName: 'text'    },
