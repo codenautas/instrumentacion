@@ -9,11 +9,14 @@ export function operativos():TableDefinition{
         fields: [
             {name:'operativo'       , typeName:'text'       },
             {name:'nombre'          , typeName:'text'       },
-            {name:'descripcion'     , typeName:'text'       , title:'descripción'   },
+            {name:'descripcion'     , typeName:'text'       , title:'descripción',   },
             {name:'annio'           , typeName:'integer'    , title:'año'           },
             {name:'onda'            , typeName:'text'       },
         ],
         primaryKey: ['operativo'],
+        detailTables:[
+            {table: 'instapp'      , fields:['operativo'], abr:'I', label:'Instancias'    },
+        ]
     }
     return td
 }
