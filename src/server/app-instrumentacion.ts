@@ -70,7 +70,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         html.div({class: 'flex-item caja-cen'}, [
                             html.div({class:'contenido'},[
                                 html.header({class:'header'},[
-                                    html.h1(['Registro de instalación de la aplicación y del código fuente'])
+                                    html.h1(['F-ARIP-10 Registro código fuente'])
                                 ]),
                                 html.div({class:'desarrollo-texto'},[
                                     content
@@ -102,6 +102,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         contentPage(documentRow:any){
 
             const documents = this.groupBy(documentRow,'operativo');
+            
             let mainContent:HtmlTag<any>[] = [];
             const elementOperativo = (title:String, result:any, isDate:boolean =false)=>{
                 if(!!result){
@@ -115,7 +116,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }
             }
             
-            const elementLi = (documentR:any)=>{
+            const aplicaciones = (operativo:any)=>{
+                const documentR = operativo[0];
+                let url = '';
                 let arr = [];
                 if(!!documentR.aplicacion){
                     arr.push(
@@ -133,16 +136,30 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         ])
                     );
                 }
-                if(!!documentR.git_host || !!documentR.git_group || documentR.git_project){
+                if(!!documentR.git_host){
+                    url = documentR.git_host;
+                } 
+                if(!!documentR.git_group){
+                    url = `${url}/${documentR.git_group}`;
+                }
+                if(!!documentR.git_project){
+                    url = `${url}/${documentR.git_project}`;
+                }
+                if(!!url){
                     arr.push(html.li([
                         html.b(['Repositorio: ']),
-                        [ `${documentR.git_host}/${documentR.git_group}/${documentR.git_project}`],
+                        html.a({href:`${url}`},`${url}`)
                     ])
                     );
                 }
-                return arr;
+                if(arr.length>0){
+                    return [html.h3(['Aplicaciones']),html.ul(arr)];
+                }else{
+                    return [];
+                }
             }
-            const elementCaracteristicas = (documentR:any)=>{
+            const caracteristicas = (operativo:any)=>{
+                const documentR = operativo[0];
                 let arr = [];
                 (!!documentR.lenguaje) && arr.push(html.li([
                     html.b(['Lenguaje de programación: ']),
@@ -161,33 +178,74 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     html.b(['Tecnologías: ']),
                     [ documentR.tecnologias],
                 ]));
-                return arr;
+                if(arr.length>0){
+                    return [
+                        html.h3(['Características del sistema y del código fuente']),
+                        html.ul(arr),
+                    ];
+                }else{
+                    return [];
+                }
             }
+
+            const urls = (operativo:any)=>{
+                
+                const elementos = [
+                    operativo.map((e:any)=>{
+                        const arr = [];
+                        let url:string = '';
+                        if(!!e.ambiente){
+                            arr.push(e.ambiente)
+                        }
+                        if(!!e.uso){
+                            arr.push(', ')
+                            arr.push(e.uso)
+                        }
+                        if(!!e.ser_base_url){
+                            url = `${e.ser_base_url}'/'`;
+                        }
+                        if(!!e.base_url){
+                            url = `${url}${e.base_url}`;
+                        }
+                        if(!!url){
+                            arr.push(': ');
+                            arr.push(html.a({href:`${url}`},`${url}`));
+                        }
+                        if(arr.length > 0){
+                            const element = html.li(arr);
+                            return (element);
+                        }
+                    }),
+                ];
+                if(elementos.length>0){
+                    return [
+                        html.h3(['Urls de Acceso']), 
+                        html.ul(elementos)
+                    ];
+                }else{
+                    return []
+                }
+            }
+
             Object.keys(documents).forEach(key => {
-                const operativo = documents[key]
+                const operativo = documents[key];
                 const documentR = operativo[0];
+                const operativoSortFecha = operativo.sort((a:any,b:any)=>a.amb_orden-b.amb_orden || a.fecha_instalacion-b.fecha_instalacion);
+                const fechaInst = operativoSortFecha[0];
                 const content:HtmlTag<any>[] = [
                     html.h2([
                         html.b(['Operativo: ']),
                         [ documentR.operativo],
                     ]),
-                    elementOperativo('Pase a Producción: ', documentR.fecha_instalacion, true),
+                    elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
                     elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
                     elementOperativo('Año del Operativo: ', documentR.ope_annio),
                     elementOperativo('Descripción del Operativo: ', documentR.ope_desc),
                     elementOperativo('Onda del Operativo: ', documentR.ope_onda),
-                    html.div([                   
-                        html.h3(['Aplicación']),
-                        html.ul(elementLi(documentR)),
-                        html.h3(['Urls de Acceso']),
-                        html.ul([
-                            operativo.map((e:any)=>{
-                                const element = html.li([e.ambiente,' ',e.uso, ' ', e.base_url]);
-                                return (element);
-                            }),
-                        ]),
-                        html.h3(['Características del sistema y del código fuente']),
-                        html.ul(elementCaracteristicas(documentR)),
+                    html.div([
+                        aplicaciones(operativo),                                           
+                        urls(operativo),
+                        caracteristicas(operativo)
                     ]),                                                   
                 ];
                 mainContent = [...mainContent, ...content, html.br()]
@@ -204,14 +262,19 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
                             select 
-                            ia.aplicacion, ia.ambiente, ia.base_url, ia.fecha_instalacion, ia.operativo, ia.uso,
+                            ia.operativo, ia.ambiente, ia.uso, ia.aplicacion, ia.base_url, ia.fecha_instalacion, ia.uso,
                             a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
-                            ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda
+                            ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda,
+                            ser.base_url as ser_base_url,
+                            u.orden as u_orden,
+                            amb.orden as amb_orden
                             from instapp ia 
-                            inner join aplicaciones a on (a.aplicacion = ia.aplicacion)
                             inner join operativos ope on (ope.operativo = ia.operativo)
-                            inner join ambientes amb on (amb.ambiente = ia.ambiente)                          
-                            order by amb.orden asc, ope.operativo desc, a.aplicacion desc
+                            left join aplicaciones a on (a.aplicacion = ia.aplicacion)
+                            left join ambientes amb on (amb.ambiente = ia.ambiente)
+                            left join servidores ser on (ser.servidor = ia. servidor)
+                            left join uso u on (u.uso = ia.uso)
+                            order by ope.operativo asc, amb.orden asc, u.orden asc, ia.instancia asc, ia.ambiente asc
                         `,[]).fetchAll();
                         
                     });

@@ -8,6 +8,7 @@ export function uso():TableDefinition{
         name: 'uso',
         fields: [
             {name:'uso', typeName:'text',},
+            {name:'orden', typeName:'integer',},
         ],
         primaryKey: ['uso'],
     }
