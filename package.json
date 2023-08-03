@@ -1,7 +1,7 @@
 {
   "name": "instrumentacion",
   "description": "Módulo de Instrumentacion",
-  "version": "0.1.9",
+  "version": "3.0.0",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/instrumentacion",
   "license": "MIT",
