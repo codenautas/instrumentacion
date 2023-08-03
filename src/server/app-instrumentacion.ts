@@ -125,10 +125,13 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }
             }
 
+            const urlLimpia = (cadena:string = '') => {
+                return cadena.replace(/^\/+|\/+$/g, '').trim();
+            }
+
             const aplicaciones = (operativo:any)=>{
                 const documentR = operativo[0];
                 let url = '';
-                const urlN = require('node:url');
                 let arr = [];
                 if(!!documentR.aplicacion){
                     arr.push(
@@ -147,13 +150,13 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     );
                 }
                 if(!!documentR.git_host){
-                    url = documentR.git_host;
+                    url = urlLimpia(documentR.git_host);
                 } 
                 if(!!documentR.git_group){
-                    url = urlN.resolve(url,documentR.git_group);
+                    url = `${url}/${urlLimpia(documentR.git_group)}`;
                 }
                 if(!!documentR.git_project){
-                    url = urlN.resolve(url,documentR.git_project);
+                    url = `${url}/${urlLimpia(documentR.git_project)}`;
                 }
                 if(!!url){
                     arr.push(html.li([
@@ -204,7 +207,6 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     operativo.map((e:any)=>{
                         const arr = [];
                         let url:string = '';
-                        const urlN = require('node:url');
                         if(!!e.ambiente){
                             arr.push(e.ambiente)
                         }
@@ -213,10 +215,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             arr.push(e.uso)
                         }
                         if(!!e.ser_base_url){
-                            url = `${e.ser_base_url}`;
+                            url = urlLimpia(e.ser_base_url);
                         }
                         if(!!e.base_url){
-                            url = urlN.resolve(url,e.base_url);
+                            url = `${url}/${urlLimpia(e.base_url)}`;
                         }
                         if(!!url){
                             arr.push(': ');
@@ -257,7 +259,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         aplicaciones(operativo),                                           
                         urls(operativo),
                         caracteristicas(operativo)
-                    ]),                                                   
+                    ]),
+                    html.br(),
+                    html.hr()                                                   
                 ];
                 mainContent = [...mainContent, ...content, html.br()]
             }); 
