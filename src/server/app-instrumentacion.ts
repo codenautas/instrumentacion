@@ -5,7 +5,6 @@ import {defConfig} from "./def-config";
 import {procedures} from "./procedures-instrumentacion";
 import { AppBackend, ClientModuleDefinition, ExpressPlus, Request, Response } from "./types-instrumentacion";
 export * from "./types-instrumentacion";
-
 import { usuarios } from './table-usuarios';
 import { ubicaciones } from './table-ubicaciones';
 import { ip } from './table-ip';
@@ -25,7 +24,6 @@ import { api_calls } from './table-api_calls';
 import { ambientes } from './table-ambientes';
 import * as MiniTools from "mini-tools";
 import { unexpected } from 'cast-error';
-
 import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
 
@@ -116,9 +114,21 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }
             }
             
+            const elementDescripcion = (title:String, result:any)=>{
+                if(!!result){
+                    return html.div({class:'salto-linea'}, [
+                        html.b([title]),
+                        [ `${result}`],
+                    ]);
+                }else{
+                    return html.div()
+                }
+            }
+
             const aplicaciones = (operativo:any)=>{
                 const documentR = operativo[0];
                 let url = '';
+                const urlN = require('node:url');
                 let arr = [];
                 if(!!documentR.aplicacion){
                     arr.push(
@@ -130,7 +140,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 }
                 if(!!documentR.descripcion){
                     arr.push(
-                        html.li([
+                        html.li({class:'salto-linea'}, [
                             html.b(['Descripción de la aplicación: ']),
                             [ documentR.descripcion],
                         ])
@@ -140,10 +150,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     url = documentR.git_host;
                 } 
                 if(!!documentR.git_group){
-                    url = `${url}/${documentR.git_group}`;
+                    url = urlN.resolve(url,documentR.git_group);
                 }
                 if(!!documentR.git_project){
-                    url = `${url}/${documentR.git_project}`;
+                    url = urlN.resolve(url,documentR.git_project);
                 }
                 if(!!url){
                     arr.push(html.li([
@@ -194,6 +204,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     operativo.map((e:any)=>{
                         const arr = [];
                         let url:string = '';
+                        const urlN = require('node:url');
                         if(!!e.ambiente){
                             arr.push(e.ambiente)
                         }
@@ -202,10 +213,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             arr.push(e.uso)
                         }
                         if(!!e.ser_base_url){
-                            url = `${e.ser_base_url}'/'`;
+                            url = `${e.ser_base_url}`;
                         }
                         if(!!e.base_url){
-                            url = `${url}${e.base_url}`;
+                            url = urlN.resolve(url,e.base_url);
                         }
                         if(!!url){
                             arr.push(': ');
@@ -240,7 +251,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
                     elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
                     elementOperativo('Año del Operativo: ', documentR.ope_annio),
-                    elementOperativo('Descripción del Operativo: ', documentR.ope_desc),
+                    elementDescripcion('Descripción del Operativo: ', documentR.ope_desc),
                     elementOperativo('Onda del Operativo: ', documentR.ope_onda),
                     html.div([
                         aplicaciones(operativo),                                           

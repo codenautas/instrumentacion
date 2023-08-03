@@ -5,6 +5,10 @@
     text-align: left;
     }
 
+.salto-linea {
+    white-space: pre-line;
+}
+
 .flex-conteiner{
     display: flex;
     flex-wrap: nowrap;
