@@ -97,6 +97,14 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             }, {});
         }
 
+        convertDate(fecha:Date){
+            const fechaBaseDato:Array<String> = fecha.toLocaleDateString().split('/');
+            const day:String = fechaBaseDato[0].padStart(2,'0');
+            const month:String = fechaBaseDato[1].padStart(2,'0');
+            const year:String = fechaBaseDato[2];
+            return `${day}/${month}/${year}`;
+        }
+
         contentPage(documentRow:any){
 
             const documents = this.groupBy(documentRow,'operativo');
@@ -104,7 +112,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             let mainContent:HtmlTag<any>[] = [];
             const elementOperativo = (title:String, result:any, isDate:boolean =false)=>{
                 if(!!result){
-                    isDate && (result = result.toLocaleDateString());
+                    isDate && (result = this.convertDate(result))
                     return html.div([
                         html.b([title]),
                         [ `${result}`],
@@ -246,24 +254,27 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 const operativoSortFecha = operativo.sort((a:any,b:any)=>a.amb_orden-b.amb_orden || a.fecha_instalacion-b.fecha_instalacion);
                 const fechaInst = operativoSortFecha[0];
                 const content:HtmlTag<any>[] = [
-                    html.h2([
-                        html.b(['Operativo: ']),
-                        [ documentR.operativo],
+                    html.div({class: 'salto-pagina'},[
+                        html.h2([
+                            html.b(['Operativo: ']),
+                            [ documentR.operativo],
+                        ]),
+                        elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
+                        elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
+                        elementOperativo('Año del Operativo: ', documentR.ope_annio),
+                        elementDescripcion('Descripción del Operativo: ', documentR.ope_desc),
+                        elementOperativo('Onda del Operativo: ', documentR.ope_onda),
+                        html.div([
+                            aplicaciones(operativo),                                           
+                            urls(operativo),
+                            caracteristicas(operativo)
+                        ]),
+                        html.br(),
+                        html.hr(),
+                        html.br(),                                                   
                     ]),
-                    elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
-                    elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
-                    elementOperativo('Año del Operativo: ', documentR.ope_annio),
-                    elementDescripcion('Descripción del Operativo: ', documentR.ope_desc),
-                    elementOperativo('Onda del Operativo: ', documentR.ope_onda),
-                    html.div([
-                        aplicaciones(operativo),                                           
-                        urls(operativo),
-                        caracteristicas(operativo)
-                    ]),
-                    html.br(),
-                    html.hr()                                                   
                 ];
-                mainContent = [...mainContent, ...content, html.br()]
+                mainContent = [...mainContent, ...content]
             }); 
             return mainContent;
         }
