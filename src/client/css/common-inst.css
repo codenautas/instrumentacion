@@ -123,9 +123,15 @@ b   {
     height: 20px;
     fill: #ffffff;
     }
-        
-@media print {
+
+/* s */
     
+    @media print {
+    .salto-pagina {
+        display: block;
+        page-break-inside: avoid;
+
+    }
     h1, h4{
         color: #000000;
         }
