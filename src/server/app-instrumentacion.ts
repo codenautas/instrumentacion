@@ -98,7 +98,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         }
 
         convertDate(fecha:Date){
-            const fechaBaseDato:Array<String> = fecha.toLocaleDateString().split('/');
+            const fechaBaseDato:Array<String> = fecha.toLocaleDateString('es-AR',{day:'numeric',month:'numeric',year:'numeric'}).split('/');
             const day:String = fechaBaseDato[0].padStart(2,'0');
             const month:String = fechaBaseDato[1].padStart(2,'0');
             const year:String = fechaBaseDato[2];
