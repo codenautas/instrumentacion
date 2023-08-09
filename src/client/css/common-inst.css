@@ -56,6 +56,10 @@
     flex-wrap: nowrap;
     }
 
+.blockquote {
+    border-bottom: 2px solid grey;
+}
+
 .desarrollo-texto{
     width: 100%;
     padding: 10px;
