@@ -254,25 +254,31 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 const operativoSortFecha = operativo.sort((a:any,b:any)=>a.amb_orden-b.amb_orden || a.fecha_instalacion-b.fecha_instalacion);
                 const fechaInst = operativoSortFecha[0];
                 const content:HtmlTag<any>[] = [
-                    html.div({class: 'salto-pagina'},[
-                        html.h2([
-                            html.b(['Operativo: ']),
-                            [ documentR.operativo],
+                    html.div({class:'blockquote'},[
+
+                        html.div({class: 'salto-pagina'},[
+                            html.h2([
+                                html.b(['Operativo: ']),
+                                [ documentR.operativo],
+                            ]),
+                            elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
+                            elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
+                            elementOperativo('Año del Operativo: ', documentR.ope_annio),
+                            elementDescripcion('Descripción del Operativo: ', documentR.ope_desc),
+                            elementOperativo('Onda del Operativo: ', documentR.ope_onda),
                         ]),
-                        elementOperativo('Pase a Producción: ', fechaInst.fecha_instalacion, true),
-                        elementOperativo('Nombre del Operativo: ', documentR.ope_nom),
-                        elementOperativo('Año del Operativo: ', documentR.ope_annio),
-                        elementDescripcion('Descripción del Operativo: ', documentR.ope_desc),
-                        elementOperativo('Onda del Operativo: ', documentR.ope_onda),
-                        html.div([
+                        html.div({class: 'salto-pagina'},[
                             aplicaciones(operativo),                                           
+                        ]),
+                        html.div({class: 'salto-pagina'},[
                             urls(operativo),
+                        ]),
+                        html.div({class: 'salto-pagina'},[
                             caracteristicas(operativo)
                         ]),
                         html.br(),
-                        html.hr(),
-                        html.br(),                                                   
                     ]),
+                    html.br(),
                 ];
                 mainContent = [...mainContent, ...content]
             }); 
