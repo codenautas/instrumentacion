@@ -276,9 +276,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         html.div({class: 'salto-pagina'},[
                             caracteristicas(operativo)
                         ]),
-                        html.br(),
                     ]),
-                    html.br(),
                 ];
                 mainContent = [...mainContent, ...content]
             }); 
