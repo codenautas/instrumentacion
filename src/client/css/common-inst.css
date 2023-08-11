@@ -57,8 +57,17 @@
     }
 
 .blockquote {
-    border-bottom: 2px solid grey;
-}
+    border: 1px solid rgb(200, 200, 200);
+    /*border-left: 4px solid rgb(200, 200, 200);*/
+    /*border-top-right-radius: 9px;*/
+    /*border-bottom-right-radius: 7px;*/
+    padding: 5px;
+    padding-left: 30px;
+    padding-top: 20px;
+    padding-bottom: 15px;
+    margin: 20px;
+    /*box-shadow: 5px 5px 15px #d8d8d8;*/
+    }
 
 .desarrollo-texto{
     width: 100%;
@@ -80,7 +89,8 @@
     min-height: 20px;
     flex-wrap: nowrap;
     }
-/*.svglog{
+
+    /*.svglog{
     padding left: 10px;
     padding right: 5px;
     } */  
@@ -88,7 +98,7 @@
 h1  {
     font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
     font-weight: 700;
-    }
+    margin-left: 20px;}
 
 h4  {
     font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
@@ -100,7 +110,7 @@ h3  {
     font-size: 20px;
     font-weight: 700;
     text-align: left;
-}
+    }
 
 p   {
     padding-top: 20px;
@@ -112,7 +122,10 @@ b   {
     font-family:'open sans', Courier, monospace;
     font-weight: 700;
     }
-  
+
+br {
+    height: 1px;
+    }    
 
 /*body{
     background-image: url(fondo.png);
@@ -128,19 +141,22 @@ b   {
     fill: #ffffff;
     }
 
-/* s */
-    
-    @media print {
+@media print {
     .salto-pagina {
         display: block;
         page-break-inside: avoid;
+        }
+    .blockquote {
+        max-width: 18.5cm;
+        /*box-shadow: none;*/
+        }    
 
-    }
     h1, h4{
         color: #000000;
         }
     h1  {
-        font-size: 25px;
+        font-size: 30px;
+        margin-left: 45px;
         }
     h4  {
         font-size: 15px;
@@ -148,12 +164,16 @@ b   {
         border-top-color: #000000;
         border-top-style: solid;
         }
-        h3  {
-            font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            text-align: left;
+    h3  {
+        font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: left;
         }
+    h2  {
+        font-family: 'open sans', 'Arial Narrow', Arial, sans-serif;
+        font-size: 28px;
+        }        
     .header{
         margin: 0px;
         padding: 0px;
