@@ -19,6 +19,7 @@ import { motores } from './table-motores';
 import { categorias_doc } from './table-categorias_doc';
 import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
+import { textos_doc } from './table-textos_doc';
 import { areas } from './table-areas';
 import { api_calls } from './table-api_calls';
 import { ambientes } from './table-ambientes';
@@ -53,10 +54,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             this.setStaticConfig(defConfig);
         }
 
-        commonPage(req:Request, content:HtmlTag<any>[]){
-            
+        commonPage(req:Request, content:HtmlTag<any>[], documentText:any){
             let baseUrl = `${this.app.path()}/client`;
             var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
+            
             return html.html({lang}, [
                 html.head([
                     html.link({rel:"stylesheet", href:`${baseUrl}/css/common-inst.css`}), 
@@ -68,7 +69,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         html.div({class: 'flex-item caja-cen'}, [
                             html.div({class:'contenido'},[
                                 html.header({class:'header'},[
-                                    html.h1(['Anexo 2 Registro código fuente'])
+                                    html.h1([` ${documentText.encabezado} `])
                                 ]),
                                 html.div({class:'desarrollo-texto'},[
                                     content
@@ -76,7 +77,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                                 html.footer({class:'footer'},[
                                     html.h4([
                                         html.img({class: 'svglog', src: `${baseUrl}/img/logest.svg`}),
-                                        [' Departamento de Proyectos Especiales '],
+                                        [` ${documentText.pie} `],
                                         html.img({class: 'svglog', src: `${baseUrl}/img/logba.svg`}),
                                     ])
                                 ])
@@ -289,6 +290,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             be.app.get(`/documentacion`,async function(req:Request, res:Response, _next:NextFunction){
                 try{
                     let documentQuery:any;
+                    let documentTextQuery:any;
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
                             select 
@@ -306,13 +308,32 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             left join uso u on (u.uso = ia.uso)
                             order by ope.operativo asc, amb.orden asc, u.orden asc, ia.instancia asc, ia.ambiente asc
                         `,[]).fetchAll();
-                        
+                        documentTextQuery = client.query(`
+                            select *
+                            from textos_doc
+                        `,[]).fetchAll();
                     });
                     const {rows:documentRow} = await documentQuery!;
+                    const {rows:documentTextRow} = await documentTextQuery!;
                     if(documentRow.length===0) throw new Error('No hay operativos');
-
-                    const htmlPage=be.commonPage(req, be.contentPage(documentRow));
-                    const txtPage = htmlPage.toHtmlDoc({title:'instrumentacion'},{})
+                    let docText = {
+                        encabezado: '',
+                        pie: '',
+                        archivo: 'Registro código fuente'
+                    }
+                    documentTextRow.forEach((element:any) => {
+                        if(element.codigo === 'archivo_de_texto' && !!element.texto){
+                            docText.archivo = element.texto;
+                        }
+                        if(element.codigo === 'pie' && !!element.texto){
+                            docText.pie = element.texto;
+                        }
+                        if(element.codigo === 'encabezado' && !!element.texto){
+                            docText.encabezado = element.texto;
+                        }
+                    });
+                    const htmlPage=be.commonPage(req, be.contentPage(documentRow), docText);
+                    const txtPage = htmlPage.toHtmlDoc({title:`${docText.archivo}`},{})
                     MiniTools.serveText(txtPage,'html')(req,res);
                 }catch(err){
                     console.error('ERROR CON', req.headers.host, req.url)
@@ -380,6 +401,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'operativos'},
                     {menuType:'table', name:'productos'},
                     {menuType:'table', name:'servidores'},
+                    {menuType:'table', name:'textos_doc'},
                     {menuType:'table', name:'uso'},
                 ]}, 
                 {menuType:'menu', name:'provisorio', menuContent:[
@@ -396,6 +418,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             this.getTableDefinition={
                 ...this.getTableDefinition,
                 usuarios,
+                textos_doc,
                 ubicaciones,
                 ip,
                 user_agents,
