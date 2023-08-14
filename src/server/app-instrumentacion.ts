@@ -68,7 +68,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         html.div({class: 'flex-item caja-cen'}, [
                             html.div({class:'contenido'},[
                                 html.header({class:'header'},[
-                                    html.h1(['F-ARIP-10 Registro código fuente'])
+                                    html.h1(['Anexo 2 Registro código fuente'])
                                 ]),
                                 html.div({class:'desarrollo-texto'},[
                                     content
