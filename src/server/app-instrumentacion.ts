@@ -322,7 +322,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         archivo: 'Registro código fuente'
                     }
                     documentTextRow.forEach((element:any) => {
-                        if(element.codigo === 'archivo_de_texto' && !!element.texto){
+                        if(element.codigo === 'nombre_de_archivo' && !!element.texto){
                             docText.archivo = element.texto;
                         }
                         if(element.codigo === 'pie' && !!element.texto){
