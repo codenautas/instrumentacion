@@ -11,6 +11,12 @@ export function servidores(context: TableContext): TableDefinition {
         fields: [
             { name: "servidor"           , typeName: 'text'    },
             { name: "hostname"           , typeName: 'text'    },
+            
+            { name: "uso"                , typeName: 'text'   },
+            { name: "estado"                , typeName: 'text'   },
+            { name: "obs"                , typeName: 'text', label: 'observaciones'    },
+            { name: "entorno"                , typeName: 'text'    },
+
             { name: "ip"                 , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
@@ -20,7 +26,6 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "server_engine"      , typeName: 'text'    },
             { name: "conf_path"          , typeName: 'text'    },
             { name: "coderun"            , typeName: 'text'    },
-            { name: "obs"                , typeName: 'text'    },
             { name: "web"                , typeName: 'jsonb'   },
         ],
         primaryKey: ['servidor'],

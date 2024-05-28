@@ -11,6 +11,7 @@ export function aplicaciones(context: TableContext): TableDefinition {
         fields: [
             { name: "aplicacion"    , typeName: 'text',     title: 'aplicación' },
             { name: "descripcion"   , typeName: 'text',     title: 'descripción'},
+            { name: "referente"     , typeName: 'text'     },
             { name: "git_host"      , typeName: 'text',     },
             { name: "git_group"     , typeName: 'text',     },
             { name: "git_project"   , typeName: 'text',     },
