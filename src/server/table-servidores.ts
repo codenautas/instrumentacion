@@ -13,9 +13,10 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "hostname"           , typeName: 'text'    },
             
             { name: "uso"                , typeName: 'text'   },
-            { name: "estado"                , typeName: 'text'   },
-            { name: "obs"                , typeName: 'text', label: 'observaciones'    },
-            { name: "entorno"                , typeName: 'text'    },
+            { name: "estado"             , typeName: 'text'   },
+            { name: "obs"                , typeName: 'text', label: 'observaciones'},
+            { name: "entorno"            , typeName: 'text'    },
+            { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
 
             { name: "ip"                 , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },

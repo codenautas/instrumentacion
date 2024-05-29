@@ -3,10 +3,12 @@
 alter table servidores add column "uso" text;
 alter table servidores add column "estado" text;
 alter table servidores add column "entorno" text;
+alter table servidores add column "ubicacion" text;
 
 alter table "servidores" add constraint "uso<>''" check ("uso"<>'');
 alter table "servidores" add constraint "estado<>''" check ("estado"<>'');
 alter table "servidores" add constraint "entorno<>''" check ("entorno"<>'');
+alter table "servidores" add constraint "ubicacion<>''" check ("ubicacion"<>'');
 
 -- aplicaciones
 alter table aplicaciones add column "referente" text;
