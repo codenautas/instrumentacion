@@ -16,6 +16,8 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "base_url"            , typeName: 'text'    },
             { name: "aplicacion"          , typeName: 'text'    },
             { name: "operativo"           , typeName: 'text'    },
+            { name: "criticidad"          , typeName: 'text'    },
+            { name: "tolerancia_downtime" , typeName: 'text'    },
             { name: "servidor"            , typeName: 'text'    },
             { name: "user"                , typeName: 'text'    },
             { name: "db_servidor"         , typeName: 'text'    },
