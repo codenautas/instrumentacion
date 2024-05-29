@@ -12,9 +12,9 @@ alter table "servidores" add constraint "entorno<>''" check ("entorno"<>'');
 alter table aplicaciones add column "referente" text;
 alter table "aplicaciones" add constraint "referente<>''" check ("referente"<>'');
 
--- instapps
-alter table instapps add column "criticidad" text;
-alter table instapps add column "tolerancia_downtime" text;
-alter table instapps add constraint "criticidad<>''" check ("criticidad"<>'');
-alter table instapps add constraint "tolerancia_downtime<>''" check ("tolerancia_downtime"<>'');
+-- instapp
+alter table instapp add column "criticidad" text;
+alter table instapp add column "tolerancia_downtime" text;
+alter table instapp add constraint "criticidad<>''" check ("criticidad"<>'');
+alter table instapp add constraint "tolerancia_downtime<>''" check ("tolerancia_downtime"<>'');
 
