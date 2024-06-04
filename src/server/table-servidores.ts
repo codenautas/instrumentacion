@@ -11,14 +11,15 @@ export function servidores(context: TableContext): TableDefinition {
         fields: [
             { name: "servidor"           , typeName: 'text'    },
             { name: "hostname"           , typeName: 'text'    },
+            { name: "ip"                 , typeName: 'text',   },
             
             { name: "uso"                , typeName: 'text'   },
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
             { name: "entorno"            , typeName: 'text'    },
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
+            { name: "referentes"         , typeName: 'text', inTable:false},
 
-            { name: "ip"                 , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
             { name: "base_url"           , typeName: 'text'    },
@@ -29,6 +30,13 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "coderun"            , typeName: 'text'    },
             { name: "web"                , typeName: 'jsonb'   },
         ],
+        sql:{
+            fields:{
+                referentes:{
+                    expr:"(select string_agg(referente, '; ' order by referente) from aplicaciones a join instapp ia using (aplicacion) where ia.servidor=servidores.servidor)"
+                }
+            }
+        },
         primaryKey: ['servidor'],
         detailTables:[
             {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
