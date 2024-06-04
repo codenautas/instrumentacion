@@ -33,7 +33,7 @@ export function servidores(context: TableContext): TableDefinition {
         sql:{
             fields:{
                 referentes:{
-                    expr:"(select string_agg(referente, '; ' order by referente) from aplicaciones a join instapp ia using (aplicacion) where ia.servidor=servidores.servidor)"
+                    expr:"(select string_agg(distinct referente, '; ' order by referente) from aplicaciones a join instapp ia using (aplicacion) where ia.servidor=servidores.servidor)"
                 }
             }
         },
