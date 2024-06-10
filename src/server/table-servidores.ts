@@ -12,16 +12,15 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "servidor"           , typeName: 'text'    },
             { name: "hostname"           , typeName: 'text'    },
             { name: "ip"                 , typeName: 'text',   },
-            
             { name: "uso"                , typeName: 'text'   },
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
-            { name: "entorno"            , typeName: 'text'    },
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
-            { name: "referentes"         , typeName: 'text', inTable:false},
-
-            { name: "ip_anterior"        , typeName: 'text'    },
+            { name: "referentes"         , typeName: 'text', inTable:false, editable:false},
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
+            { name: "entorno"            , typeName: 'text'    },
+            { name: "ip_anterior"        , typeName: 'text'    },
+            .
             { name: "base_url"           , typeName: 'text'    },
             { name: "pw"                 , typeName: 'text'    },
             { name: "infodisk"           , typeName: 'text'    , label:"df -h"},
