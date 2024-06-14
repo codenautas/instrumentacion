@@ -16,7 +16,8 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
-            { name: "referentes"         , typeName: 'text', inTable:false, editable:false},
+            { name: "referentes"         , typeName: 'text' },
+            { name: "backups_externos"   , typeName: 'text' },
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
             { name: "entorno"            , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },
@@ -29,13 +30,6 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "coderun"            , typeName: 'text'    },
             { name: "web"                , typeName: 'jsonb'   },
         ],
-        sql:{
-            fields:{
-                referentes:{
-                    expr:"(select string_agg(distinct referente, '; ' order by referente) from aplicaciones a join instapp ia using (aplicacion) where ia.servidor=servidores.servidor)"
-                }
-            }
-        },
         primaryKey: ['servidor'],
         detailTables:[
             {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
