@@ -41,8 +41,8 @@
     /*height: 100vh;*/
     }    
 .header, .footer{
-    background-color: #ffd306;
-    color:#525252;
+    background-color: #004D8C;
+    color:#ffffff;
     font-family: 'open sans', Courier, monospace;
     }
 
@@ -88,6 +88,7 @@
     max-height: 20px;
     min-height: 20px;
     flex-wrap: nowrap;
+    /* display: inline-table; */ 
     }
 
     /*.svglog{
