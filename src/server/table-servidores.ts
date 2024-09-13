@@ -16,7 +16,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
             { name: "referentes"         , typeName: 'text' },
-            { name: "backups_externos"   , typeName: 'text' },
+            { name: "usuario_backups_externos"   , typeName: 'text'},
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
             { name: "pw"                 , typeName: 'text'    },
@@ -30,6 +30,9 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "web"                , typeName: 'jsonb'   },
         ],
         primaryKey: ['servidor'],
+        foreignKeys:[
+            {references: 'usuarios' , fields:[{source:'backups_externos', target:'usuario'}]},
+        ],
         detailTables:[
             {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
             {table: 'motores'        , fields:['servidor'], abr:'M', label:'motores'      },
