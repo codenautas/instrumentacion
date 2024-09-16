@@ -62,7 +62,7 @@ async function backupDatabase(engine, dbName, backupDir) {
     const dumpFilePath = path.join(backupDir, `${dbName}.sql`);
 
     // Comando pg_dump para generar el backup en formato de texto plano, excluyendo los datos de los esquemas "his" y "temp"
-    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${engine.host} -U ${localConfig.usuario_backup} -F p --exclude-table-data='his.*' --exclude-table-data='temp.*' -f "${dumpFilePath}" ${dbName}`;
+    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${engine.host} -U ${localConfig.usuario_backup} -F p --blobs --exclude-table-data his.* --exclude-table-data temp.* -f "${dumpFilePath}" ${dbName}`;
 
     return new Promise((resolve, reject) => {
         const dumpProcess = exec(dumpCommand);
