@@ -18,7 +18,7 @@ function loadConfig() {
 
 // Obtener configuración
 const config = loadConfig();
-const dbConfig = config.db;
+const dbConfig = config.db_instrumentacion;
 
 // Función para obtener los servidores desde la DB instrumentacion_db
 async function getServersFromDB(usuario) {
@@ -32,7 +32,7 @@ async function getServersFromDB(usuario) {
     try {
         await client.connect();
         const query = `
-            SELECT s.servidor, s.ip as host, s.usuario_backups_externos, m.producto, m.puerto AS user
+            SELECT s.servidor, s.ip as host, s.usuario_backups_externos, m.producto, m.puerto AS puerto
             FROM instrumentacion.servidores s left join instrumentacion.motores m using(servidor)
             where m.producto ='postgres' and s.usuario_backups_externos = $1;
         `;
@@ -48,23 +48,23 @@ async function getServersFromDB(usuario) {
 // Función para obtener todas las bases de datos de un servidor
 async function getDatabases(serverConfig) {
     const client = new Client({
-        host: serverConfig.host,
-        user: serverConfig.user,
-        port: serverConfig.port,
-        database: 'postgres' // Conectarse a la base de datos por defecto
+        host: dbConfig.host,
+        user: dbConfig.user,
+        port: dbConfig.port,
+        database: dbConfig.database,
+        password: dbConfig.password
     });
 
     await client.connect();
 
     const res = await client.query(
-        `SELECT datname FROM pg_database 
-        WHERE datistemplate = false
-        AND datname NOT SIMILAR TO '%(test|prueba|muleto|template|postgres|bkp|bak|capa)%'
-        ORDER BY 1;
-    `);
+        `select database, s.ip, db.port from instrumentacion.servidores s left join instrumentacion.databases db using (servidor)
+        where s.ip = $1 and db.port = $2 
+        AND db.database !~ 'test|prueba|muleto|template|postgres|bkp|bak|capa'
+    `,[serverConfig.host, serverConfig.puerto]);
     await client.end();
 
-    return res.rows.map(row => row.datname);
+    return res.rows.map(row => row.database);
 }
 
 // Función para hacer el backup de una base de datos
@@ -74,7 +74,7 @@ async function backupDatabase(serverConfig, dbName, backupDir) {
     const dumpFilePath = path.join(backupDir, `${dbName}.sql`);
 
     // Comando pg_dump para generar el backup en formato de texto plano, excluyendo los datos de los esquemas "his" y "temp"
-    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${serverConfig.host} -U ${serverConfig.user} -F p --exclude-table-data='his.*' -f "${dumpFilePath}" ${dbName}`;
+    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${serverConfig.host} -U ${dbConfig.usuario_backup} -F p --exclude-table-data='his.*' -f "${dumpFilePath}" ${dbName}`;
 
     return new Promise((resolve, reject) => {
         const dumpProcess = exec(dumpCommand);
@@ -130,7 +130,7 @@ async function main() {
     // Obtener el usuario desde la línea de comandos y verificar si está presente
     const usuarioBackups = process.argv[2];
     if (!usuarioBackups) {
-        console.error('Error: Debes proporcionar el usuario para obtener los servidores.');
+        console.error('Error: Debes proporcionar el usuario como parametro del script para obtener los servidores.');
         process.exit(1); // Finaliza el script con código de error
     }
 
