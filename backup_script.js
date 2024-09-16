@@ -17,64 +17,52 @@ function loadConfig() {
 }
 
 // Obtener configuración
-const config = loadConfig();
-const dbConfig = config.db_instrumentacion;
+const localConfig = loadConfig().db_instrumentacion;
+const instrumentacionDBClient = new Client({
+    host: localConfig.host,
+    user: localConfig.user,
+    port: localConfig.port,
+    database: localConfig.database,
+    password: localConfig.password
+});
 
-// Función para obtener los servidores desde la DB instrumentacion_db
-async function getServersFromDB(usuario) {
-    const client = new Client({
-        host: dbConfig.host,
-        user: dbConfig.user,
-        port: dbConfig.port,
-        database: dbConfig.database,
-        password: dbConfig.password
-    });
+async function getEnginesToBackup() {
     try {
-        await client.connect();
+        await instrumentacionDBClient.connect();
         const query = `
-            SELECT s.servidor, s.ip as host, s.usuario_backups_externos, m.producto, m.puerto AS puerto
-            FROM instrumentacion.servidores s left join instrumentacion.motores m using(servidor)
-            where m.producto ='postgres' and s.usuario_backups_externos = $1;
+            set search_path=$1;
+            SELECT m.puerto AS puerto, s.ip as host, s.servidor, s.usuario_backups_externos, m.producto
+            FROM servidores s left join motores m using(servidor)
+            where m.producto ='postgres' and s.usuario_backups_externos = $2;
         `;
-        const res = await client.query(query, [usuario]);
-        await client.end();
-        return res.rows; // Devuelve una lista de servidores
+        const res = await instrumentacionDBClient.query(query, [localConfig.schema, localConfig.usuario_inst_responsable_backup]);
+        await instrumentacionDBClient.end();
+        return res.rows;
     } catch (err) {
         console.error('Error al obtener servidores:', err);
         throw err;
     }
 }
 
-// Función para obtener todas las bases de datos de un servidor
-async function getDatabases(serverConfig) {
-    const client = new Client({
-        host: dbConfig.host,
-        user: dbConfig.user,
-        port: dbConfig.port,
-        database: dbConfig.database,
-        password: dbConfig.password
-    });
-
-    await client.connect();
-
-    const res = await client.query(
-        `select database, s.ip, db.port from instrumentacion.servidores s left join instrumentacion.databases db using (servidor)
-        where s.ip = $1 and db.port = $2 
-        AND db.database !~ 'test|prueba|muleto|template|postgres|bkp|bak|capa'
-    `,[serverConfig.host, serverConfig.puerto]);
-    await client.end();
-
+async function getDatabases(engine) {
+    await instrumentacionDBClient.connect();
+    const res = await instrumentacionDBClient.query(
+        `set search_path=$1;
+        SELECT database, s.ip, db.port FROM instrumentacion.servidores s left join instrumentacion.databases db using (servidor)
+        where s.ip = $2 and db.port = $3 
+        AND db.database !~ 'test|prueba|muleto|template|postgres|bkp|bak|capa';
+    `,[localConfig.schema, engine.host, engine.puerto]);
+    await instrumentacionDBClient.end();
     return res.rows.map(row => row.database);
 }
 
-// Función para hacer el backup de una base de datos
-async function backupDatabase(serverConfig, dbName, backupDir) {
-    console.log(`Iniciando backup de la base de datos: ${dbName} en el servidor: ${serverConfig.host}`);
+async function backupDatabase(engine, dbName, backupDir) {
+    console.log(`Iniciando backup de la base de datos: ${dbName} en el engine: ${engine.host}: ${engine.puerto}`);
 
     const dumpFilePath = path.join(backupDir, `${dbName}.sql`);
 
     // Comando pg_dump para generar el backup en formato de texto plano, excluyendo los datos de los esquemas "his" y "temp"
-    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${serverConfig.host} -U ${dbConfig.usuario_backup} -F p --exclude-table-data='his.*' -f "${dumpFilePath}" ${dbName}`;
+    const dumpCommand = `"C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump.exe" -h ${engine.host} -U ${localConfig.usuario_backup} -F p --exclude-table-data='his.*' --exclude-table-data='temp.*' -f "${dumpFilePath}" ${dbName}`;
 
     return new Promise((resolve, reject) => {
         const dumpProcess = exec(dumpCommand);
@@ -126,39 +114,29 @@ async function compressBackup(filePath) {
 // Función principal
 async function main() {
     console.log('Iniciando proceso de backup...');
-
-    // Obtener el usuario desde la línea de comandos y verificar si está presente
-    const usuarioBackups = process.argv[2];
-    if (!usuarioBackups) {
-        console.error('Error: Debes proporcionar el usuario como parametro del script para obtener los servidores.');
-        process.exit(1); // Finaliza el script con código de error
-    }
-
     try {
         // Obtener servidores desde la DB 'instrumentacion_db'
-        const servers = await getServersFromDB(usuarioBackups);
-
-        for (const server of servers) {
-            const backupDir = `./local-backups/${server.servidor}_${server.host}`;
-
-            // Crear el directorio para los backups del servidor si no existe
+        const engines = await getEnginesToBackup();
+        console.log('usuario responsable de backupear los siguientes engines: '+engines.map(e=>{e.host, e.puerto}))
+        
+        for (const engine of engines) {
+            const backupDir = `./local-backups/${engine.servidor}_${engine.host}`;
             if (!fs.existsSync(backupDir)) {
                 fs.mkdirSync(backupDir, { recursive: true });
             }
 
             try {
-                const databases = await getDatabases(server);
-                console.log(`Conectado al servidor ${server.host}. Bases de datos: ${databases.join(', ')}`);
-
+                const databases = await getDatabases(engine);
+                console.log(`Para el engine ${e.host, e.puerto} se intentaran backupear las siguientes DBs: ${databases}`)
                 for (const dbName of databases) {
-                    const backupPath = await backupDatabase(server, dbName, backupDir);
+                    const backupPath = await backupDatabase(engine, dbName, backupDir);
                     await compressBackup(backupPath);
                     fs.unlinkSync(backupPath); // Elimina el archivo .sql después de comprimirlo
                 }
 
-                console.log(`Proceso completado para el servidor ${server.host}`);
+                console.log(`Proceso completado para el engine ${engine.host}, ${engine.port}`);
             } catch (err) {
-                console.error(`Error en el servidor ${server.host}: ${err.message}`);
+                console.error(`Error en el engine ${engine.host}, ${engine.port}: ${err.message}`);
             }
         }
 
