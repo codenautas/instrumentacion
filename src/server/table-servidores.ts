@@ -16,7 +16,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
             { name: "referentes"         , typeName: 'text' },
-            { name: "usuario_backups_externos"   , typeName: 'text'},
+            { name: "usuario_backups_externos"   , typeName: 'text', title:'responsable backup externo'},
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
             { name: "pw"                 , typeName: 'text'    },
