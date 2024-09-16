@@ -31,7 +31,7 @@ export function servidores(context: TableContext): TableDefinition {
         ],
         primaryKey: ['servidor'],
         foreignKeys:[
-            {references: 'usuarios' , fields:[{source:'backups_externos', target:'usuario'}]},
+            {references: 'usuarios' , fields:[{source:'usuario_backups_externos', target:'usuario'}]},
         ],
         detailTables:[
             {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
