@@ -23,20 +23,18 @@ const instrumentacionDBClient = new Client({
     user: localConfig.user,
     port: localConfig.port,
     database: localConfig.database,
+    options: `--search_path=${localConfig.schema}`,
     password: localConfig.password
 });
 
 async function getEnginesToBackup() {
     try {
-        await instrumentacionDBClient.connect();
         const query = `
-            set search_path=$1;
             SELECT m.puerto AS puerto, s.ip as host, s.servidor, s.usuario_backups_externos, m.producto
             FROM servidores s left join motores m using(servidor)
-            where m.producto ='postgres' and s.usuario_backups_externos = $2;
+            where m.producto ='postgres' and s.usuario_backups_externos = $1;
         `;
-        const res = await instrumentacionDBClient.query(query, [localConfig.schema, localConfig.usuario_inst_responsable_backup]);
-        await instrumentacionDBClient.end();
+        const res = await instrumentacionDBClient.query(query, [localConfig.usuario_inst_responsable_backup]);
         return res.rows;
     } catch (err) {
         console.error('Error al obtener servidores:', err);
@@ -45,15 +43,17 @@ async function getEnginesToBackup() {
 }
 
 async function getDatabases(engine) {
-    await instrumentacionDBClient.connect();
-    const res = await instrumentacionDBClient.query(
-        `set search_path=$1;
-        SELECT database, s.ip, db.port FROM instrumentacion.servidores s left join instrumentacion.databases db using (servidor)
-        where s.ip = $2 and db.port = $3 
-        AND db.database !~ 'test|prueba|muleto|template|postgres|bkp|bak|capa';
-    `,[localConfig.schema, engine.host, engine.puerto]);
-    await instrumentacionDBClient.end();
-    return res.rows.map(row => row.database);
+    try {
+        const res = await instrumentacionDBClient.query(
+            `SELECT database, s.ip, db.port FROM instrumentacion.servidores s left join instrumentacion.databases db using (servidor)
+            where s.ip = $1 and db.port = $2 
+            AND db.database !~ 'test|prueba|muleto|template|postgres|bkp|bak|capa';
+        `,[engine.host, engine.puerto]);
+        return res.rows.map(row => row.database);
+    } catch (err) {
+        console.error('Error al obtener servidores:', err);
+        throw err;
+    }
 }
 
 async function backupDatabase(engine, dbName, backupDir) {
@@ -116,9 +116,11 @@ async function main() {
     console.log('Iniciando proceso de backup...');
     try {
         // Obtener servidores desde la DB 'instrumentacion_db'
+        await instrumentacionDBClient.connect();
         const engines = await getEnginesToBackup();
-        console.log('usuario responsable de backupear los siguientes engines: '+engines.map(e=>{e.host, e.puerto}))
-        
+        console.log('Usuario responsable de backupear los siguientes engines:');
+        console.table(engines.map(e => ({ Host: e.host, Puerto: e.puerto })));
+                
         for (const engine of engines) {
             const backupDir = `./local-backups/${engine.servidor}_${engine.host}`;
             if (!fs.existsSync(backupDir)) {
@@ -127,7 +129,7 @@ async function main() {
 
             try {
                 const databases = await getDatabases(engine);
-                console.log(`Para el engine ${e.host, e.puerto} se intentaran backupear las siguientes DBs: ${databases}`)
+                console.log(`Para el engine ${engine.host}: ${engine.puerto} se intentaran backupear las siguientes DBs: ${databases}`)
                 for (const dbName of databases) {
                     const backupPath = await backupDatabase(engine, dbName, backupDir);
                     await compressBackup(backupPath);
@@ -139,6 +141,7 @@ async function main() {
                 console.error(`Error en el engine ${engine.host}, ${engine.port}: ${err.message}`);
             }
         }
+        await instrumentacionDBClient.end();
 
         console.log('Proceso de backup finalizado.');
     } catch (err) {
