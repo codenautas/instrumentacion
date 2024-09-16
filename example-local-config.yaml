@@ -9,7 +9,7 @@ db_instrumentacion:
   database: instrumentacion_db
   schema: instrumentacion
   usuario_backup: usuario_pgpass_para_backups
-  usuario_inst_responsable_backup: earosteguy
+  usuario_inst_responsable_backup: usuario_inst
 log:
   req: false
 login:
