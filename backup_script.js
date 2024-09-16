@@ -57,7 +57,7 @@ async function getDatabases(engine) {
 }
 
 async function backupDatabase(engine, dbName, backupDir) {
-    console.log(`Iniciando backup de la base de datos: ${dbName} en el engine: ${engine.host}: ${engine.puerto}`);
+    console.log(`Iniciando backup de la base de datos: ${dbName} en el engine: ${engine.host}:${engine.puerto}`);
 
     const dumpFilePath = path.join(backupDir, `${dbName}.sql`);
 
@@ -129,16 +129,16 @@ async function main() {
 
             try {
                 const databases = await getDatabases(engine);
-                console.log(`Para el engine ${engine.host}: ${engine.puerto} se intentaran backupear las siguientes DBs: ${databases}`)
+                console.log(`Para el engine ${engine.host}:${engine.puerto} se intentaran backupear las siguientes DBs: ${databases}`)
                 for (const dbName of databases) {
                     const backupPath = await backupDatabase(engine, dbName, backupDir);
                     await compressBackup(backupPath);
                     fs.unlinkSync(backupPath); // Elimina el archivo .sql después de comprimirlo
                 }
 
-                console.log(`Proceso completado para el engine ${engine.host}, ${engine.port}`);
+                console.log(`Proceso completado para el engine ${engine.host}:${engine.puerto}`);
             } catch (err) {
-                console.error(`Error en el engine ${engine.host}, ${engine.port}: ${err.message}`);
+                console.error(`Error en el engine ${engine.host}:${engine.puerto}: ${err.message}`);
             }
         }
         await instrumentacionDBClient.end();
