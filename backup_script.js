@@ -32,7 +32,8 @@ async function getEnginesToBackup() {
         const query = `
             SELECT m.puerto AS puerto, s.ip as host, s.servidor, s.usuario_backups_externos, m.producto
             FROM servidores s left join motores m using(servidor)
-            where m.producto ='postgres' and s.usuario_backups_externos = $1;
+            where m.producto ='postgres' and s.usuario_backups_externos = $1
+            order by s.ip, m.puerto;
         `;
         const res = await instrumentacionDBClient.query(query, [localConfig.usuario_inst_responsable_backup]);
         return res.rows;
@@ -122,7 +123,7 @@ async function main() {
         console.table(engines.map(e => ({ Host: e.host, Puerto: e.puerto })));
                 
         for (const engine of engines) {
-            const backupDir = `./local-backups/${engine.servidor}_${engine.host}`;
+            const backupDir = `./local-backups/${engine.servidor}_${engine.host}/${engine.puerto}`;
             if (!fs.existsSync(backupDir)) {
                 fs.mkdirSync(backupDir, { recursive: true });
             }
