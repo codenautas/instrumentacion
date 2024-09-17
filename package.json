@@ -38,7 +38,9 @@
     "start": "node dist/server/server-instrumentacion.js",
     "prepare": "npm run build",
     "cp": "copyfiles -f src/client/img/* dist/client/img",
-    "build": "npm run cp && (tsc -p tsconfig-client.json || echo \"continue w/error\") && (tsc -p tsconfig-server.json  || echo \"continue w/error\") && mixin-patch"
+    "build": "npm run cp && (tsc -p tsconfig-client.json || echo \"continue w/error\") && (tsc -p tsconfig-server.json  || echo \"continue w/error\") && mixin-patch",
+    "watch:buildC": "(tsc -p src/client --watch || echo \"continue w/error\")",
+    "watch:buildS": "(tsc -p src/server --watch || echo \"continue w/error\")"
   },
   "qa-control": {
     "package-version": "0.3.0",

@@ -15,6 +15,7 @@ import { instapp } from './table-instapp';
 import { uso } from './table-uso';
 import { operativos } from './table-operativos';
 import { backups } from './table-backups';
+import { backups_externos } from './table-backups_externos';
 import { motores } from './table-motores';
 import { categorias_doc } from './table-categorias_doc';
 import { aplicaciones } from './table-aplicaciones';
@@ -389,12 +390,14 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'ip'},
                     {menuType:'table', name:'ubicaciones'},
                     {menuType:'table', name:'user_agents'},
+                    {menuType:'table', name:'usuarios'},
                 ]}, 
                 {menuType:'menu', name:'servicios', menuContent:[
                     {menuType:'table', name:'ambientes'},
                     {menuType:'table', name:'aplicaciones'},
                     {menuType:'table', name:'areas'},
                     {menuType:'table', name:'backups'},
+                    {menuType:'table', name:'backups_externos'},
                     {menuType:'table', name:'databases'},
                     {menuType:'table', name:'instapp'},
                     {menuType:'table', name:'motores'},
@@ -430,6 +433,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 uso,
                 instapp,
                 backups,
+                backups_externos,
                 motores,
                 aplicaciones,
                 productos,

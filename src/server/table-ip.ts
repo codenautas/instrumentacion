@@ -18,6 +18,7 @@ export function ip(context: TableContext): TableDefinition {
         primaryKey: ['ip'],
         foreignKeys: [
             {references:'ubicaciones'    , fields:['ubicacion']               },
+            {references: 'usuarios' , fields:[{source:'uhabitual', target:'usuario'}]},
         ],
         detailTables: [
             { table: 'user_agents', fields: ['ip'], abr: 'ua'}
