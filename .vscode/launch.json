@@ -7,18 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "basckup script",
-            "program": "${workspaceFolder}/backup_script.js",
-            "args": [
-                "earosteguy"
-            ],
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Launch Program",
             "preLaunchTask": "build-all",
             "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",
@@ -61,18 +49,6 @@
             "outFiles": [
                 "${workspaceFolder}/lib/**/*.js"
             ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "backup",
-            "program": "${workspaceFolder}/backup_script.js",
-            "args": [
-                "earosteguy"
-            ],
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        },    
+        }
     ]
 }
