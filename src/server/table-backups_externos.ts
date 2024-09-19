@@ -12,9 +12,11 @@ export function backups_externos(context: TableContext): TableDefinition {
             { name: "database"           , typeName: 'text' },
             { name: "servidor"           , typeName: 'text' },
             { name: "port"           , typeName: 'integer' },
+            { name: "fecha"               , typeName: 'text' },
+            { name: "exitoso"           , typeName: 'boolean' },
+            { name: "error"           , typeName: 'text' },
             { name: "usuario_db_backup"   , typeName: 'text' },
             { name: "usuario_pc_responsable"   , typeName: 'text' },
-            { name: "fecha"               , typeName: 'text' },
         ],
         primaryKey: ['database','servidor','port','fecha'],
         foreignKeys:[

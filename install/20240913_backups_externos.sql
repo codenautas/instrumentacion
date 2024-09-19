@@ -9,9 +9,11 @@ create table "backups_externos" (
   "database" text, 
   "servidor" text, 
   "port" integer, 
+  "fecha" text,
+  "exitoso" boolean, 
+  "error" text, 
   "usuario_db_backup" text, 
   "usuario_pc_responsable" text, 
-  "fecha" text
 , primary key ("database", "servidor", "port", "fecha")
 );
 grant select, insert, update, delete on "backups_externos" to instrumentacion_admin;
@@ -19,6 +21,7 @@ grant all on "backups_externos" to instrumentacion_owner;
 
 alter table "backups_externos" add constraint "database<>''" check ("database"<>'');
 alter table "backups_externos" add constraint "servidor<>''" check ("servidor"<>'');
+alter table "backups_externos" add constraint "error<>''" check ("error"<>'');
 alter table "backups_externos" add constraint "usuario_db_backup<>''" check ("usuario_db_backup"<>'');
 alter table "backups_externos" add constraint "usuario_pc_responsable<>''" check ("usuario_pc_responsable"<>'');
 alter table "backups_externos" add constraint "fecha<>''" check ("fecha"<>'');
