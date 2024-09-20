@@ -12,7 +12,7 @@ export function backups_externos(context: TableContext): TableDefinition {
             { name: "database",               editable: false, typeName: 'text' },
             { name: "servidor",               editable: false, typeName: 'text' },
             { name: "port",                   editable: false, typeName: 'integer' },
-            { name: "fecha",                  editable: false, typeName: 'text' },
+            { name: "fecha",                  editable: false, typeName: 'date' },
             { name: "exitoso",                editable: false, typeName: 'boolean' },
             { name: "error",                  editable: false, typeName: 'text' },
             { name: "usuario_db_backup",      editable: false, typeName: 'text' },
