@@ -49,6 +49,14 @@ var procedures: ProcedureDef[] = [
                 }
             );
         }
+    },
+    {
+        action: 'show_databases_referentes_backups',
+        parameters:[],
+        resultOk:'showGrid',
+        coreFunction:async function(_context:ProcedureContext, _params:CoreFunctionParameters){
+            return {tableName:'databases_referentes_backups'};
+        }
     }
 ];
 export {procedures};

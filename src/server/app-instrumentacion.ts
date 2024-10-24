@@ -28,6 +28,7 @@ import * as MiniTools from "mini-tools";
 import { unexpected } from 'cast-error';
 import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
+import { databases_referentes_backups } from "./table-databases_referentes_backups";
 
 export type Constructor<T> = new(...args: any[]) => T;
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base:T){
@@ -396,8 +397,6 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'ambientes'},
                     {menuType:'table', name:'aplicaciones'},
                     {menuType:'table', name:'areas'},
-                    {menuType:'table', name:'backups'},
-                    {menuType:'table', name:'backups_externos'},
                     {menuType:'table', name:'databases'},
                     {menuType:'table', name:'instapp'},
                     {menuType:'table', name:'motores'},
@@ -407,6 +406,11 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'textos_doc'},
                     {menuType:'table', name:'uso'},
                 ]}, 
+                {menuType:'menu', name:'backups', menuContent:[
+                    {menuType:'table', name:'backups_externos', label:'registro backups'},
+                    {menuType:'proc', name:'show_databases_referentes_backups', label:'referente backup por DB', autoproced:true},
+                    {menuType:'table', name:'backups'},
+                ]},
                 {menuType:'menu', name:'provisorio', menuContent:[
                     {menuType:'proc', name:'api_call'},
                     {menuType:'table', name:'api_calls'},
@@ -427,6 +431,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 user_agents,
                 servidores,
                 databases,
+                databases_referentes_backups,
                 categorias_doc,
                 ambientes,
                 operativos,
