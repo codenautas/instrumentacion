@@ -17,6 +17,15 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Fast Launch",
+            "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "dumpDb",
             "preLaunchTask": "build-all",
             "program": "${workspaceFolder}/dist/server/server-instrumentacion.js",

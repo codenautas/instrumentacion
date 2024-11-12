@@ -17,7 +17,6 @@ import { operativos } from './table-operativos';
 import { backups } from './table-backups';
 import { backups_externos } from './table-backups_externos';
 import { motores } from './table-motores';
-import { categorias_doc } from './table-categorias_doc';
 import { aplicaciones } from './table-aplicaciones';
 import { productos } from './table-productos';
 import { textos_doc } from './table-textos_doc';
@@ -432,7 +431,6 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 servidores,
                 databases,
                 databases_referentes_backups,
-                categorias_doc,
                 ambientes,
                 operativos,
                 uso,
