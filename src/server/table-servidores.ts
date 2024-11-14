@@ -24,10 +24,6 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "base_url"           , typeName: 'text'    },
             { name: "ip_anterior"        , typeName: 'text'    },
             { name: "infodisk"           , typeName: 'text'    , label:"df -h"},
-            { name: "server_engine"      , typeName: 'text'    },
-            { name: "conf_path"          , typeName: 'text'    },
-            { name: "coderun"            , typeName: 'text'    },
-            { name: "web"                , typeName: 'jsonb'   },
         ],
         primaryKey: ['servidor'],
         foreignKeys:[

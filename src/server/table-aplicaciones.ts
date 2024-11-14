@@ -11,12 +11,10 @@ export function aplicaciones(context: TableContext): TableDefinition {
         fields: [
             { name: "aplicacion"    , typeName: 'text',     title: 'aplicación' },
             { name: "descripcion"   , typeName: 'text',     title: 'descripción'},
-            { name: "referente"     , typeName: 'text'     },
+            { name: "referente"     , typeName: 'text', isName:true     },
             { name: "git_host"      , typeName: 'text',     },
             { name: "git_group"     , typeName: 'text',     },
             { name: "git_project"   , typeName: 'text',     },
-            { name: "version"       , typeName: 'text',     },
-            { name: "bp_version"    , typeName: 'text',     description:'versión de backendplus'},
             { name: "obs"           , typeName: 'text',     },
             { name: "lenguaje"      , typeName: 'text',     },
             { name: "capac_ope"     , typeName: 'text',     },
