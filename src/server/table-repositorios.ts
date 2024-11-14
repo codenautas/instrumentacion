@@ -2,14 +2,14 @@
 
 import {TableDefinition, TableContext} from "./types-instrumentacion"
 
-export function aplicaciones(context: TableContext): TableDefinition {
+export function repositorios(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
     return {
-        name: 'aplicaciones',
-        elementName: 'aplicacion',
+        name: 'repositorios',
+        elementName: 'repositorio',
         editable: admin,
         fields: [
-            { name: "aplicacion"    , typeName: 'text',     title: 'aplicación' },
+            { name: "repositorio"    , typeName: 'text'     },
             { name: "descripcion"   , typeName: 'text',     title: 'descripción'},
             { name: "referente"     , typeName: 'text', isName:true     },
             { name: "git_host"      , typeName: 'text',     },
@@ -21,9 +21,9 @@ export function aplicaciones(context: TableContext): TableDefinition {
             { name: "tipo_db"       , typeName: 'text',     },
             { name: "tecnologias"   , typeName: 'text',     },
         ],
-        primaryKey: ['aplicacion'],
+        primaryKey: ['repositorio'],
         detailTables: [
-            {table: 'instapp'      , fields:['aplicacion'], abr:'I', label:'instancias'    },
+            {table: 'instapp'      , fields:['repositorio'], abr:'I', label:'instancias'    },
         ]
     }
 }

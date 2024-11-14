@@ -17,7 +17,7 @@ import { operativos } from './table-operativos';
 import { backups } from './table-backups';
 import { backups_externos } from './table-backups_externos';
 import { motores } from './table-motores';
-import { aplicaciones } from './table-aplicaciones';
+import { repositorios } from './table-repositorios';
 import { productos } from './table-productos';
 import { textos_doc } from './table-textos_doc';
 import { areas } from './table-areas';
@@ -139,22 +139,22 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 return cadena.replace(/^\/+|\/+$/g, '').trim();
             }
 
-            const aplicaciones = (operativo:any)=>{
+            const repositorios = (operativo:any)=>{
                 const documentR = operativo[0];
                 let url = '';
                 let arr = [];
-                if(!!documentR.aplicacion){
+                if(!!documentR.repositorio){
                     arr.push(
                         html.li([
-                            html.b(['Nombre de la aplicación: ']),
-                            [ `${documentR.aplicacion}`],
+                            html.b(['Nombre del repositorio: ']),
+                            [ `${documentR.repositorio}`],
                         ])
                     );
                 }
                 if(!!documentR.descripcion){
                     arr.push(
                         html.li({class:'salto-linea'}, [
-                            html.b(['Descripción de la aplicación: ']),
+                            html.b(['Descripción del repositorio: ']),
                             [ documentR.descripcion],
                         ])
                     );
@@ -176,7 +176,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     );
                 }
                 if(arr.length>0){
-                    return [html.h3(['Aplicaciones']),html.ul(arr)];
+                    return [html.h3(['repositorios']),html.ul(arr)];
                 }else{
                     return [];
                 }
@@ -270,7 +270,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             elementOperativo('Onda del Operativo: ', documentR.ope_onda),
                         ]),
                         html.div({class: 'salto-pagina'},[
-                            aplicaciones(operativo),                                           
+                            repositorios(operativo),                                           
                         ]),
                         html.div({class: 'salto-pagina'},[
                             urls(operativo),
@@ -295,7 +295,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     await be.inDbClient(req, async function(client){                        
                         documentQuery = client.query(`
                             select 
-                            ia.operativo, ia.ambiente, ia.uso, ia.aplicacion, ia.base_url, ia.fecha_instalacion, ia.uso,
+                            ia.operativo, ia.ambiente, ia.uso, ia.repositorio, ia.base_url, ia.fecha_instalacion, ia.uso,
                             a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
                             ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda,
                             ser.base_url as ser_base_url,
@@ -303,7 +303,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                             amb.orden as amb_orden
                             from instapp ia 
                             inner join operativos ope on (ope.operativo = ia.operativo)
-                            left join aplicaciones a on (a.aplicacion = ia.aplicacion)
+                            left join repositorios a on (a.repositorio = ia.repositorio)
                             left join ambientes amb on (amb.ambiente = ia.ambiente)
                             left join servidores ser on (ser.servidor = ia. servidor)
                             left join uso u on (u.uso = ia.uso)
@@ -396,7 +396,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'instapp'},
                     {menuType:'table', name:'databases'},
                     {menuType:'table', name:'servidores'},
-                    {menuType:'table', name:'aplicaciones'},
+                    {menuType:'table', name:'repositorios'},
                     {menuType:'table', name:'operativos'},
                     {menuType:'table', name:'motores'},
                     {menuType:'table', name:'areas'},
@@ -438,7 +438,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 backups,
                 backups_externos,
                 motores,
-                aplicaciones,
+                repositorios,
                 productos,
                 areas,
                 api_calls

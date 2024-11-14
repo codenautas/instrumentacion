@@ -11,7 +11,7 @@ export function databases_referentes_backups(_context: TableContext): TableDefin
         {name: "referentes",                 typeName: "text", tableAliasPrefix:'s', fieldAlias:'referentes_server'},
         {name: "usuario_backups_externos",   typeName: "text", tableAliasPrefix:'s', fieldAlias:'responsable_backup_externo'},
         {name: "instancia",                  typeName: "text", tableAliasPrefix:'ia', fieldAlias:'instapp'},
-        {name: "aplicacion",                 typeName: "text", tableAliasPrefix:'app'},
+        {name: "repositorio",                 typeName: "text", tableAliasPrefix:'app'},
         {name: "referente",                  typeName: "text", tableAliasPrefix:'app', fieldAlias:'referente_app'},
     ];
     const qi = _context.be.db.quoteIdent;
@@ -23,7 +23,7 @@ export function databases_referentes_backups(_context: TableContext): TableDefin
         sql:{
             isTable:false,
             from:`(SELECT ${fieldsToShow.map(f=>qi(f.tableAliasPrefix)+'.'+qi(f.name)+ (f.fieldAlias?' '+qi(f.fieldAlias):'')).join(', ')}
-                FROM databases db LEFT JOIN servidores s using(servidor) LEFT JOIN instapp ia using(database) LEFT JOIN aplicaciones app using(aplicacion)
+                FROM databases db LEFT JOIN servidores s using(servidor) LEFT JOIN instapp ia using(database) LEFT JOIN repositorios app using(repositorio)
                 ORDER BY responsable_backup_externo desc, db.servidor, referente_app, database)`
         },
         primaryKey: ['database','servidor','port']

@@ -14,7 +14,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "ambiente"            , typeName: 'text'    },
             { name: "uso"                 , typeName: 'text'    },
             { name: "base_url"            , typeName: 'text'    },
-            { name: "aplicacion"          , typeName: 'text'    },
+            { name: "repositorio"          , typeName: 'text'    },
             { name: "operativo"           , typeName: 'text'    },
             { name: "criticidad"          , typeName: 'text'    },
             { name: "tolerancia_downtime" , typeName: 'text'    },
@@ -38,7 +38,7 @@ export function instapp(context: TableContext): TableDefinition {
         foreignKeys:[
             {references: 'servidores'   , fields:['servidor']},
             {references: 'databases'    , fields:[{source:'db_servidor', target:'servidor'}, 'database', {source:'db_port', target:'port'}]},
-            {references: 'aplicaciones' , fields:['aplicacion']},
+            {references: 'repositorios' , fields:['repositorio']},
             {references: 'operativos' , fields:['operativo']},
             {references: 'uso' , fields:['uso']},
             {references: 'ambientes' , fields:['ambiente'], displayFields:['orden']},
