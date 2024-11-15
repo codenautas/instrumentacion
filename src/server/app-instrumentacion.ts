@@ -14,6 +14,8 @@ import { databases } from './table-databases';
 import { instapp } from './table-instapp';
 import { uso } from './table-uso';
 import { operativos } from './table-operativos';
+import { operativos_instancias } from './table-operativos_instancias';
+import { repositorios_instancias } from './table-repositorios_instancias';
 import { backups } from './table-backups';
 import { backups_externos } from './table-backups_externos';
 import { motores } from './table-motores';
@@ -433,6 +435,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 databases_referentes_backups,
                 ambientes,
                 operativos,
+                operativos_instancias,
+                repositorios_instancias,
                 uso,
                 instapp,
                 backups,

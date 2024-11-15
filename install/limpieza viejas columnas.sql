@@ -25,4 +25,4 @@ alter table "databases" drop column "so_path";
 -- change aplicaciones to repositorios
 ALTER TABLE aplicaciones RENAME TO repositorios;
 ALTER TABLE repositorios RENAME COLUMN aplicacion TO repositorio;
-
+ALTER TABLE instapp RENAME COLUMN aplicacion TO repositorio;

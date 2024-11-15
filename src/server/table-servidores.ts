@@ -30,9 +30,11 @@ export function servidores(context: TableContext): TableDefinition {
             {references: 'usuarios' , fields:[{source:'usuario_backups_externos', target:'usuario'}]},
         ],
         detailTables:[
-            {table: 'databases'      , fields:['servidor'], abr:'D', label:'databases'    },
-            {table: 'motores'        , fields:['servidor'], abr:'M', label:'motores'      },
-            {table: 'instapp'        , fields:['servidor'], abr:'I', label:'instalaciones'},
+            {table: 'databases'                , fields:['servidor'], abr:'D', label:'databases'    },
+            {table: 'motores'                  , fields:['servidor'], abr:'M', label:'motores'      },
+            {table: 'instapp'                  , fields:['servidor'], abr:'I', label:'instalaciones'},
+            {table: 'operativos_instancias' , fields:['servidor'], abr:'O', label:'operativos'},
+            {table: 'repositorios_instancias' , fields:['servidor'], abr:'R', label:'repositorios'},
         ],
     }
 }
