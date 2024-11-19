@@ -31,7 +31,8 @@ export function databases(context: TableContext): TableDefinition {
             {references: 'areas' , fields:['area']},
         ],
         detailTables:[
-            {table: 'backups'      , fields:['database'], abr:'B', label:'backups'},
+            {table: 'databases_referentes_backups' , fields:['database'], abr:'BE', label:'backups_externos'},
+            // {table: 'backups'      , fields:['database'], abr:'B', label:'backups'},
             {table: 'instapp'      , fields:[{source:'servidor', target:'db_servidor'},'database',{source:'port', target:'db_port'}], abr:'I', label:'instalaciones'},
         ],
     }
