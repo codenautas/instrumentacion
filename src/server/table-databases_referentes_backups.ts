@@ -1,30 +1,35 @@
 "use strict";
 
-import {TableDefinition, TableContext, FieldDefinition} from "./types-instrumentacion"
+import {TableDefinition, TableContext} from "./types-instrumentacion"
 
 export function databases_referentes_backups(_context: TableContext): TableDefinition {
-    const fieldsToShow = [
-        {name: "database",                   typeName: "text", tableAliasPrefix:'db'},
-        {name: "servidor",                   typeName: "text", tableAliasPrefix:'db'},
-        {name: "ip",                         typeName: "text", tableAliasPrefix:'s'},
-        {name: "port",                       typeName: "integer", tableAliasPrefix:'db'},
-        {name: "referentes",                 typeName: "text", tableAliasPrefix:'s', fieldAlias:'referentes_server'},
-        {name: "usuario_backups_externos",   typeName: "text", tableAliasPrefix:'s', fieldAlias:'responsable_backup_externo'},
-        {name: "instancia",                  typeName: "text", tableAliasPrefix:'ia', fieldAlias:'instapp'},
-        {name: "repositorio",                 typeName: "text", tableAliasPrefix:'app'},
-        {name: "referente",                  typeName: "text", tableAliasPrefix:'app', fieldAlias:'referente_app'},
-    ];
-    const qi = _context.be.db.quoteIdent;
     return {
         name: 'databases_referentes_backups',
         elementName: 'database_referente_backup',
         editable: false,
-        fields: fieldsToShow.map(f => <FieldDefinition>{typeName: f.typeName, name:f.fieldAlias||f.name}),
+        fields: [
+            {name: "database",                   typeName: "text"},
+            {name: "servidor",                   typeName: "text"},
+            {name: "ip",                         typeName: "text"},
+            {name: "port",                       typeName: "integer"},
+            {name: "referentes_server",          typeName: "text"},
+            {name: "responsable_backup_externo", typeName: "text"},
+            {name: "instancias",                 typeName: "text"},
+            {name: "repositorios",               typeName: "text"},
+            {name: "referentes_repos",            typeName: "text"},
+        ],
         sql:{
             isTable:false,
-            from:`(SELECT ${fieldsToShow.map(f=>qi(f.tableAliasPrefix)+'.'+qi(f.name)+ (f.fieldAlias?' '+qi(f.fieldAlias):'')).join(', ')}
-                FROM databases db LEFT JOIN servidores s using(servidor) LEFT JOIN instapp ia using(database) LEFT JOIN repositorios app using(repositorio)
-                ORDER BY responsable_backup_externo desc, db.servidor, referente_app, database)`
+            from:`(SELECT "db"."database", "db"."servidor", "s"."ip", "db"."port", "s"."referentes" "referentes_server", "s"."usuario_backups_externos" "responsable_backup_externo", 
+                    string_agg(ia.instancia, '; ' ORDER BY ia.instancia) AS instancias, 
+                    string_agg(distinct "app"."repositorio", '; ' ORDER BY "app"."repositorio") AS repositorios,
+                    string_agg(distinct "app"."referente", '; ' ORDER BY "app"."referente") AS referentes_repos
+                FROM databases db 
+                    LEFT JOIN servidores s using(servidor) 
+                    LEFT JOIN instapp ia using(database) 
+                    LEFT JOIN repositorios app using(repositorio)
+                group by db.database, db.servidor, s.ip, db.port, s.referentes, s.usuario_backups_externos
+                ORDER BY responsable_backup_externo desc, db.servidor, referentes_repos, database)`
         },
         primaryKey: ['database','servidor','port']
     }
