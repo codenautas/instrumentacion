@@ -410,7 +410,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'backups', menuContent:[
                     {menuType:'table', name:'backups_externos', label:'registro backups'},
                     {menuType:'proc', name:'show_databases_referentes_backups', label:'referente backup por DB', autoproced:true},
-                    {menuType:'table', name:'backups'},
+                    {menuType:'table', name:'backups', label:'backups en server con crontab'},
                 ]},
                 {menuType:'menu', name:'provisorio', menuContent:[
                     {menuType:'proc', name:'api_call'},

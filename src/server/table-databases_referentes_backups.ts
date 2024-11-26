@@ -16,7 +16,7 @@ export function databases_referentes_backups(_context: TableContext): TableDefin
             {name: "referentes_server",          typeName: "text"},
             {name: "responsable_backup_externo", typeName: "text"},
             {name: "instancias",                 typeName: "text"},
-            {name: "operativos_instancias",            typeName: "text"},
+            {name: "operativos_instancias",      typeName: "text"},
             {name: "usos_instancias",            typeName: "text"},
             {name: "ambientes_instancias",       typeName: "text"},
             {name: "repositorios",               typeName: "text"},
