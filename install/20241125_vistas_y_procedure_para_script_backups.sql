@@ -4,13 +4,14 @@ set role to instrumentacion_admin;
 CREATE OR REPLACE VIEW vw_get_engines AS
 SELECT m.puerto AS puerto, s.ip AS host, s.servidor, s.usuario_backups_externos, m.producto
 FROM servidores s LEFT JOIN motores m USING (servidor)
-WHERE m.producto = 'postgres'
+WHERE m.producto = 'postgres' AND NOT s.eliminado
 ORDER BY s.ip, m.puerto;
 
 CREATE OR REPLACE VIEW vw_get_databases AS
 SELECT database, s.ip, db.port 
 FROM instrumentacion.servidores s 
 left join instrumentacion.databases db using (servidor)
+WHERE NOT s.eliminado AND (db.eliminado is null OR NOT db.eliminado)
 ORDER BY db.database, s.ip, db.port;
 
 CREATE OR REPLACE FUNCTION fun_insertar_backup_externo(
