@@ -19,6 +19,7 @@ export function databases(context: TableContext): TableDefinition {
             { name: "periodo"               , typeName: 'text'    },
             { name: "area"                  , typeName: 'text'    },
             { name: "estado"                , typeName: 'text'    },
+            { name: "eliminado"             , typeName: 'boolean' },
             { name: "en_campo"              , typeName: 'boolean' },
             { name: "seg_confidencialidad"  , typeName: 'integer' },
             { name: "seg_integridad"        , typeName: 'integer' },

@@ -19,6 +19,7 @@ export function servidores(context: TableContext): TableDefinition {
             { name: "usuario_backups_externos"   , typeName: 'text', title:'responsable backup externo'},
             { name: "ubicacion"          , typeName: 'text', label: 'ubicación'},
             { name: "so"                 , typeName: 'text'    , label: "S.O."},
+            { name: "eliminado"          , typeName: 'boolean' },
             { name: "pw"                 , typeName: 'text'    },
             { name: "entorno"            , typeName: 'text'    },
             { name: "base_url"           , typeName: 'text'    },
