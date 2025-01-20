@@ -1,4 +1,4 @@
--- Servidores con DBs, pero sin motor de db
+-- Servidores con DBs, pero sin motor de db (ingresar y relevar motor para seguridad versiones y para backups automaticos)
 SET search_path = instrumentacion;
 select s.servidor, 
 	string_agg(distinct m.producto, ', ') motores,
@@ -12,15 +12,15 @@ group by s.servidor
 
 -----------------------------------------
 
--- DBs sin instapp
+-- DBs sin instapp (chequear con responsables de servidor)
 SET search_path = instrumentacion;
-select dbs.database
+select dbs.database, dbs.servidor, dbs.port
 from databases dbs left join instapp i on (dbs.servidor=i.db_servidor and dbs.database=i.database and dbs.port = i.db_port)
 where i.instancia is null
 
 -----------------------------------------
 
--- Servidores con instapp pero sin motor de web server
+-- Servidores con instapp pero sin motor de web server (ingresar y relevar para seguridad versiones)
 SET search_path = instrumentacion;
 select s.servidor, 
 	string_agg(distinct m.producto, ', ') motores,
@@ -34,7 +34,7 @@ group by s.servidor
 
 -----------------------------------------
 
--- Servidores con instapp pero sin motor de lenguaje
+-- Servidores con instapp pero sin motor de lenguaje (ingresar y relevar para seguridad versiones)
 SET search_path = instrumentacion;
 select s.servidor, 
 	string_agg(distinct m.producto, ', ') motores,
@@ -49,9 +49,10 @@ group by s.servidor
 -----------------------------------------
 
 -- DBs sin rows exitosos en tabla "backups_externos" de los últimos 4 dias, de dbs
--- que no estén eliminadas, ni de servidores eliminados, cuyo "responsable backup extrno" sea distinto a 
+-- que no estén eliminadas, ni de servidores eliminados, cuyo "responsable backup externo" sea distinto a 
 -- "equipo servidores", y que no tengan los strings muleto|template|postgres|bkp|bak|capa|old|hasta
 -- dentro del nombre de la db
+-- (chequear por que no se está haciendo backup automático)
 SET search_path = instrumentacion;
 select dbs.database, dbs.servidor, dbs.port, s.usuario_backups_externos
 from databases dbs left join
