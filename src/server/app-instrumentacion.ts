@@ -18,6 +18,7 @@ import { operativos_instancias } from './table-operativos_instancias';
 import { repositorios_instancias } from './table-repositorios_instancias';
 import { backups } from './table-backups';
 import { backups_externos } from './table-backups_externos';
+import { instancias_reporte_consultora } from './table-instancias_reporte_consultora';
 import { motores } from './table-motores';
 import { repositorios } from './table-repositorios';
 import { productos } from './table-productos';
@@ -415,6 +416,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'provisorio', menuContent:[
                     {menuType:'proc', name:'api_call'},
                     {menuType:'table', name:'api_calls'},
+                    {menuType:'table', name:'instancias_reporte_consultora'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -441,6 +443,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 instapp,
                 backups,
                 backups_externos,
+                instancias_reporte_consultora,
                 motores,
                 repositorios,
                 productos,
