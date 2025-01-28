@@ -19,6 +19,8 @@ import { repositorios_instancias } from './table-repositorios_instancias';
 import { backups } from './table-backups';
 import { backups_externos } from './table-backups_externos';
 import { instancias_reporte_consultora } from './table-instancias_reporte_consultora';
+import { servers_sin_dbs_ni_instancias_reporte_consultora } from './table-servers_sin_dbs_ni_instancias_reporte_consultora';
+import { dbs_sin_instancia_reporte_consultora } from './table-dbs_sin_instancia_reporte_consultora';
 import { motores } from './table-motores';
 import { repositorios } from './table-repositorios';
 import { productos } from './table-productos';
@@ -416,7 +418,11 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 {menuType:'menu', name:'provisorio', menuContent:[
                     {menuType:'proc', name:'api_call'},
                     {menuType:'table', name:'api_calls'},
-                    {menuType:'table', name:'instancias_reporte_consultora'},
+                ]},
+                {menuType:'menu', name:'reportes_consultora', menuContent:[
+                    {menuType:'table', name:'instancias_reporte_consultora', label:'instancias'},
+                    {menuType:'table', name:'dbs_sin_instancia_reporte_consultora', label:'dbs_sin_instancia'},
+                    {menuType:'table', name:'servers_sin_dbs_ni_instancias_reporte_consultora', label:'servers_sin_dbs_ni_instancias'},
                 ]}
             ];
             let menu = {menu: super.getMenu().menu.concat(myMenuPart)}
@@ -444,6 +450,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 backups,
                 backups_externos,
                 instancias_reporte_consultora,
+                servers_sin_dbs_ni_instancias_reporte_consultora,
+                dbs_sin_instancia_reporte_consultora,
                 motores,
                 repositorios,
                 productos,
