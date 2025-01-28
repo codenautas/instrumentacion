@@ -10,13 +10,13 @@ export function dbs_sin_instancia_reporte_consultora(_context: TableContext): Ta
     tabledef.editable= false
     tabledef.fields=[
         {name: "database",          typeName: "text"},
-        {name: "servidor",            typeName: "text"},
-        {name: "ip",            typeName: "text" },
-        {name: "port",            typeName: "integer" },
-        {name: "referentes_server",            typeName: "text" },
+        {name: "servidor",          typeName: "text"},
+        {name: "ip",                typeName: "text" },
+        {name: "port",              typeName: "integer" },
+        {name: "referentes_server", typeName: "text" },
         {name: "estado",            typeName: "text" },
-        {name: "eliminado",            typeName: "boolean" },
-        {name: "server_eliminado",            typeName: "boolean" },
+        {name: "eliminado",         typeName: "boolean" },
+        {name: "server_eliminado",  typeName: "boolean" },
     ]
     tabledef.sql={
             isTable:false,
