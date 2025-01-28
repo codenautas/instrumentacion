@@ -10,13 +10,13 @@ export function servers_sin_dbs_ni_instancias_reporte_consultora(_context: Table
     tabledef.editable= false
     tabledef.fields=[
         { name: "servidor"           , typeName: 'text'    },
-            { name: "ip"                 , typeName: 'text',   },
-            { name: "uso"                , typeName: 'text'   },
-            { name: "estado"             , typeName: 'text'   },
-            { name: "obs"                , typeName: 'text', label: 'observaciones'},
-            { name: "referentes"         , typeName: 'text' },
-            { name: "eliminado"          , typeName: 'boolean' },
-            { name: "db_eliminada"       , typeName: 'boolean' },
+        { name: "ip"                 , typeName: 'text',   },
+        { name: "uso"                , typeName: 'text'   },
+        { name: "estado"             , typeName: 'text'   },
+        { name: "obs"                , typeName: 'text', label: 'observaciones'},
+        { name: "referentes"         , typeName: 'text' },
+        { name: "eliminado"          , typeName: 'boolean' },
+        { name: "db_eliminada"       , typeName: 'boolean' },
     ]
     tabledef.sql={
             isTable:false,
