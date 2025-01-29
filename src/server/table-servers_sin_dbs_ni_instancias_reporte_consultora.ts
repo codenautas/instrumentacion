@@ -9,18 +9,18 @@ export function servers_sin_dbs_ni_instancias_reporte_consultora(_context: Table
     tabledef.elementName= 'server_sin_dbs_ni_instancias_reporte_consultora'
     tabledef.editable= false
     tabledef.fields=[
-        { name: "servidor"           , typeName: 'text'    },
-        { name: "ip"                 , typeName: 'text',   },
-        { name: "uso"                , typeName: 'text'   },
-        { name: "estado"             , typeName: 'text'   },
-        { name: "obs"                , typeName: 'text', label: 'observaciones'},
-        { name: "referentes"         , typeName: 'text' },
-        { name: "eliminado"          , typeName: 'boolean' },
-        { name: "db_eliminada"       , typeName: 'boolean' },
+        { name: "servidor"   , typeName: 'text'    },
+        { name: "ip"         , typeName: 'text',   },
+        { name: "uso"        , typeName: 'text'   },
+        { name: "estado"     , typeName: 'text'   },
+        { name: "obs"        , typeName: 'text', label: 'observaciones'},
+        { name: "referentes" , typeName: 'text' },
+        { name: "eliminado"  , typeName: 'boolean' },
+        { name: "obs"        , typeName: 'text' },
     ]
     tabledef.sql={
             isTable:false,
-            from:`(select s.servidor, s.ip, s.uso, s.referentes, s.estado, s.eliminado, s.obs, dbs.eliminado db_eliminada
+            from:`(select s.servidor, s.ip, s.uso, s.referentes, s.estado, s.eliminado, s.obs
                     from servidores s
                     left join instapp ia using (servidor)
                     left join databases dbs using (servidor)
