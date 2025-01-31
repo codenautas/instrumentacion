@@ -26,12 +26,16 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
         ],
         sql:{
             isTable:false,
-            from:`(SELECT ia.operativo, ia.instancia sistema, (ia.uso||'; '||r.descripcion) descripcion, ia.ambiente escenario, s.ip ip_server_app, 
-                coalesce(r.referente, s.referentes) referentes, 
-                ('lenguajes: '||r.lenguaje||'; tipo db: '||r.tipo_db||'; tecnologias: '||r.tecnologias) fuente, 
-                ia.puerto puerto_app, r.git_host repositorio, (s.base_url||ia.base_url) as detalle_del_acceso, 
-                (m.producto||m.version) motor_db, ia.database nombre_db, ia.db_port puerto_db, sb.ip ip_servidor_db,
-                s.eliminado server_eliminado
+            from:`(SELECT ia.operativo, ia.instancia AS sistema, NULLIF(CONCAT_WS('; ', ia.uso, r.descripcion), '') AS descripcion,
+                ia.ambiente AS escenario, s.ip AS ip_server_app, COALESCE(r.referente, s.referentes) AS referentes, 
+                NULLIF(CONCAT_WS('; ', 
+                        CASE WHEN r.lenguaje IS NOT NULL THEN 'lenguajes: ' || r.lenguaje END, 
+                        CASE WHEN r.tipo_db IS NOT NULL THEN 'tipo db: ' || r.tipo_db END, 
+                        CASE WHEN r.tecnologias IS NOT NULL THEN 'tecnologias: ' || r.tecnologias END
+                ), '') AS fuente,
+                ia.puerto AS puerto_app, r.git_host AS repositorio, NULLIF(CONCAT_WS('', s.base_url, ia.base_url), '') AS detalle_del_acceso, 
+                NULLIF(CONCAT_WS('', m.producto, m.version), '') AS motor_db, ia.database AS nombre_db, ia.db_port AS puerto_db, 
+                sb.ip AS ip_servidor_db, s.eliminado AS server_eliminado
             FROM instapp ia
             LEFT JOIN databases dbs ON ia.db_servidor = dbs.servidor AND ia.database=dbs.database AND ia.db_port = dbs.port
             LEFT JOIN servidores s ON ia.servidor=s.servidor
