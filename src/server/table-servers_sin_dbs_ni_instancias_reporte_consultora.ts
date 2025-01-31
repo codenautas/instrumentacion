@@ -15,8 +15,8 @@ export function servers_sin_dbs_ni_instancias_reporte_consultora(_context: Table
         { name: "estado"     , typeName: 'text'   },
         { name: "obs"        , typeName: 'text', label: 'observaciones'},
         { name: "referentes" , typeName: 'text' },
-        { name: "eliminado"  , typeName: 'boolean' },
         { name: "obs"        , typeName: 'text' },
+        { name: "eliminado"  , typeName: 'boolean' },
     ]
     tabledef.sql={
             isTable:false,
