@@ -30,6 +30,7 @@ export function servidores(context: TableContext): TableDefinition {
         foreignKeys:[
             {references: 'usuarios' , fields:[{source:'usuario_backups_externos', target:'usuario'}]},
         ],
+        constraints:[{constraintType:'unique', consName:'uk_ip' , fields:['ip']}],
         detailTables:[
             {table: 'databases'                , fields:['servidor'], abr:'D', label:'databases'    },
             {table: 'motores'                  , fields:['servidor'], abr:'M', label:'motores'      },
