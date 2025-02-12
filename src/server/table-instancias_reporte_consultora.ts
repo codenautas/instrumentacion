@@ -34,7 +34,7 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
                         CASE WHEN r.tecnologias IS NOT NULL THEN 'tecnologias: ' || r.tecnologias END
                 ), '') AS fuente,
                 ia.puerto AS puerto_app, r.git_host AS repositorio, NULLIF(CONCAT_WS('', s.base_url, ia.base_url), '') AS detalle_del_acceso, 
-                NULLIF(CONCAT_WS('', m.producto, m.version), '') AS motor_db, ia.database AS nombre_db, ia.db_port AS puerto_db, 
+                NULLIF(CONCAT_WS(' ', m.producto, m.version), '') AS motor_db, ia.database AS nombre_db, ia.db_port AS puerto_db, 
                 sb.ip AS ip_servidor_db, s.eliminado AS server_eliminado
             FROM instapp ia
             LEFT JOIN databases dbs ON ia.db_servidor = dbs.servidor AND ia.database=dbs.database AND ia.db_port = dbs.port
