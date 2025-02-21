@@ -20,7 +20,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "tolerancia_downtime" , typeName: 'text'    },
             { name: "servidor"            , typeName: 'text'    },
             { name: "puerto"              , typeName: 'integer' },
-            { name: "user"                , typeName: 'text'    },
+            { name: "user"                , typeName: 'text'    , title: 'admin_db_user' },
             { name: "db_servidor"         , typeName: 'text'    },
             { name: "database"            , typeName: 'text'    },
             { name: "db_port"             , typeName: 'integer' },

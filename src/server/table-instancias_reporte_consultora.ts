@@ -20,8 +20,8 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
             {name: "detalle_del_acceso", typeName: "text", label:'server.base_url + inst.base_url'},
             {name: "motor_db",           typeName: "text", label:'motor (producto + version)'},
             {name: "nombre_db",          typeName: "text"},
-            {name: "puerto_db",          typeName: "integer"},
             {name: "ip_servidor_db",          typeName: "text"},
+            {name: "puerto_db",          typeName: "integer"},
             {name: "server_eliminado",   typeName: "boolean"}
         ],
         sql:{
