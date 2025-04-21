@@ -11,7 +11,7 @@ export function servidores(context: TableContext): TableDefinition {
         fields: [
             { name: "servidor"           , typeName: 'text'    },
             { name: "hostname"           , typeName: 'text'    },
-            { name: "ip"                 , typeName: 'text',   },
+            { name: "ip"                 , typeName: 'text', isName:true   },
             { name: "uso"                , typeName: 'text'   },
             { name: "estado"             , typeName: 'text'   },
             { name: "obs"                , typeName: 'text', label: 'observaciones'},
