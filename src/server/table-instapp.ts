@@ -53,7 +53,7 @@ export function instapp(context: TableContext): TableDefinition {
         sql:{
             fields:{
                 url_generada:{
-                    expr:"(COALESCE(servidores.base_url, '')||COALESCE(instapp.base_url, ''))"
+                    expr:"(NULLIF(COALESCE(servidores.base_url, '') || COALESCE(instapp.base_url, ''), ''))"
                 }
             }
         }
