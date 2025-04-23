@@ -14,7 +14,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "ambiente"            , typeName: 'text'    },
             { name: "uso"                 , typeName: 'text'    },
             { name: "base_url"            , typeName: 'text'    },
-            { name: "url_generada"        , typeName: 'text', inTable:false, label:'server.base_url + instapp.base_url'   },
+            { name: "url_generada"        , typeName: 'text', inTable:false, clientSide:'displayUrl', serverSide:true, label:'server.base_url + instapp.base_url'},
             { name: "repositorio"         , typeName: 'text'    },
             { name: "operativo"           , typeName: 'text'    },
             { name: "criticidad"          , typeName: 'text'    },
