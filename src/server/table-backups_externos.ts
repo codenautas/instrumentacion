@@ -24,5 +24,6 @@ export function backups_externos(context: TableContext): TableDefinition {
             {references: 'servidores'     , fields:['servidor']},
             {references: 'usuarios' , fields:[{source:'usuario_pc_responsable', target:'usuario'}]},
         ],
+        sortColumns:[{column:'fecha', order:-1}, {column:'servidor'}, {column:'port', order:1}, {column:'databases__owner', order:1}],
     }
 }
