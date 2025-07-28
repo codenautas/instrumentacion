@@ -33,6 +33,7 @@ import { unexpected } from 'cast-error';
 import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
 import { databases_referentes_backups } from "./table-databases_referentes_backups";
+import { emails } from "./table-emails";
 
 export type Constructor<T> = new(...args: any[]) => T;
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base:T){
@@ -408,6 +409,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'productos'},
                     {menuType:'table', name:'ambientes'},
                     {menuType:'table', name:'textos_doc'},
+                    {menuType:'table', name:'emails'},
                     {menuType:'table', name:'uso'},
                 ]}, 
                 {menuType:'menu', name:'backups', menuContent:[
@@ -455,6 +457,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 motores,
                 repositorios,
                 productos,
+                emails,
                 areas,
                 api_calls
             }
