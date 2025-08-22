@@ -46,6 +46,9 @@ export function instapp(context: TableContext): TableDefinition {
             {references: 'uso' , fields:['uso']},
             {references: 'ambientes' , fields:['ambiente'], displayFields:['orden']},
         ],
+        detailTables:[
+            {table:'emails', fields:['instancia','ambiente'], abr:'E'},
+        ],
         sortColumns:[{column:'ambientes__orden', order:1},{column:'fecha_instalacion', order:-1}],
         constraints:[
             {consName:'database y db_port deben especificarse simultaneamente', constraintType:'check', expr:'(database is null) = (db_port is null)'}
