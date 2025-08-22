@@ -18,6 +18,7 @@ export function emails(context:TableContext):TableDefinition{
         primaryKey:['instancia', 'ambiente', 'email'],
         foreignKeys: [
             {references: 'instapp', fields: ['instancia', 'ambiente']},
+            {references: 'ambientes', fields: ['ambiente']},
         ],
     };
 }
