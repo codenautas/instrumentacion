@@ -19,10 +19,8 @@ export function versiones_base(context: TableContext): TableDefinition {
             { name: "producto"             , typeName: 'text' }, // pk , fk
             { name: "version_base"         , typeName: 'text' }, // pk
             { name: "fin_soporte_seg"      , typeName: 'date' },
-            { name: "soporte_seg_actual"   , typeName: 'boolean', isName:true, inTable:false },
+            // { name: "soporte_seg_actual"   , typeName: 'boolean', isName:true, inTable:false }, //TODO: calcular automaticamente
             { name: "nombre"               , typeName: 'text' },
-            { name: "dependencia_producto" , typeName: 'text' }, // fk
-            { name: "dependencia_version_base"  , typeName: 'text' }, // fk
             { name: "url"                  , typeName: 'text' },
             { name: "release"              , typeName: 'date' },
             { name: "descripcion"          , typeName: 'text' },
@@ -30,11 +28,9 @@ export function versiones_base(context: TableContext): TableDefinition {
         primaryKey: ['producto','version_base'],
         foreignKeys:[
             {references: 'productos'       , fields:['producto']},
-            {references: 'versiones_base'  , fields:['producto', 'version_base']},
         ],
         detailTables:[
             {table: 'versiones' , fields:['producto','version_base'], abr:'VC', label:'versiones completas'},
-            // {table: 'versiones_base' , fields:['producto','version_base'], abr:'D', label:'dependencias'},
         ],
     }
 }
