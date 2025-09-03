@@ -21,7 +21,7 @@ import { backups_externos } from './table-backups_externos';
 import { instancias_reporte_consultora } from './table-instancias_reporte_consultora';
 import { servers_sin_dbs_ni_instancias_reporte_consultora } from './table-servers_sin_dbs_ni_instancias_reporte_consultora';
 import { dbs_sin_instancia_reporte_consultora } from './table-dbs_sin_instancia_reporte_consultora';
-import { motores } from './table-motores';
+import { motores_instalados } from './table-motores_instalados';
 import { repositorios } from './table-repositorios';
 import { productos } from './table-productos';
 import { textos_doc } from './table-textos_doc';
@@ -34,6 +34,8 @@ import { html, HtmlTag } from 'js-to-html';
 import { NextFunction } from "express";
 import { databases_referentes_backups } from "./table-databases_referentes_backups";
 import { emails } from "./table-emails";
+import { versiones_base } from "./table-versiones_base";
+import { versiones } from "./table-versiones";
 
 export type Constructor<T> = new(...args: any[]) => T;
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base:T){
@@ -404,7 +406,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'servidores'},
                     {menuType:'table', name:'repositorios'},
                     {menuType:'table', name:'operativos'},
-                    {menuType:'table', name:'motores'},
+                    {menuType:'table', name:'motores_instalados'},
                     {menuType:'table', name:'areas'},
                     {menuType:'table', name:'productos'},
                     {menuType:'table', name:'ambientes'},
@@ -454,7 +456,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 instancias_reporte_consultora,
                 servers_sin_dbs_ni_instancias_reporte_consultora,
                 dbs_sin_instancia_reporte_consultora,
-                motores,
+                versiones_base,
+                versiones,
+                motores_instalados,
                 repositorios,
                 productos,
                 emails,

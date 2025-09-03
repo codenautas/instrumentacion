@@ -3,7 +3,7 @@ set role to instrumentacion_admin;
 
 CREATE OR REPLACE VIEW vw_get_engines AS
 SELECT m.puerto AS puerto, s.ip AS host, s.servidor, s.usuario_backups_externos, m.producto
-FROM servidores s LEFT JOIN motores m USING (servidor)
+FROM servidores s LEFT JOIN motores_instalados m USING (servidor)
 WHERE m.producto = 'postgres' AND NOT s.eliminado
 ORDER BY s.ip, m.puerto;
 

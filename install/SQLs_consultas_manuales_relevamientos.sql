@@ -1,11 +1,11 @@
 -- Servidores con DBs, pero sin motor de db (ingresar y relevar motor para seguridad versiones y para backups automaticos)
 SET search_path = instrumentacion;
 select s.servidor, 
-	string_agg(distinct m.producto, ', ') motores,
+	string_agg(distinct m.producto, ', ') motores_instalados,
 	string_agg(distinct dbs.database, ', ') dbs
 	from servidores s 
 	left join databases dbs using(servidor)
-	left join motores m using(servidor)
+	left join motores_instalados m using(servidor)
 where dbs."database" is not null and 
 	(m.producto is null OR m.producto not in ('postgres', 'mysql', 'sqlserver'))
 group by s.servidor
@@ -23,11 +23,11 @@ where i.instancia is null
 -- Servidores con instapp pero sin motor de web server (ingresar y relevar para seguridad versiones)
 SET search_path = instrumentacion;
 select s.servidor, 
-	string_agg(distinct m.producto, ', ') motores,
+	string_agg(distinct m.producto, ', ') motores_instalados,
 	string_agg(distinct i.instancia, ', ') instancias
 	from servidores s 
 	left join instapp i using(servidor)
-	left join motores m using(servidor)
+	left join motores_instalados m using(servidor)
 where i.instancia is not null and 
 	(m.producto is null OR m.producto not in ('apache', 'nginx', 'iis', 'tomcat'))
 group by s.servidor
@@ -37,11 +37,11 @@ group by s.servidor
 -- Servidores con instapp pero sin motor de lenguaje (ingresar y relevar para seguridad versiones)
 SET search_path = instrumentacion;
 select s.servidor, 
-	string_agg(distinct m.producto, ', ') motores,
+	string_agg(distinct m.producto, ', ') motores_instalados,
 	string_agg(distinct i.instancia, ', ') instancias
 	from servidores s 
 	left join instapp i using(servidor)
-	left join motores m using(servidor)
+	left join motores_instalados m using(servidor)
 where i.instancia is not null and 
 	(m.producto is null OR m.producto not in ('node', 'python', 'php'))
 group by s.servidor

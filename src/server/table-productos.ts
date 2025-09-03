@@ -10,7 +10,8 @@ export function productos(context: TableContext): TableDefinition {
         editable: admin,
         fields: [
             { name: "producto"           , typeName: 'text' },
-            { name: "tipo"               , typeName: 'text' },
+            { name: "tipo"               , typeName: 'text', options: ['dbms', 'entorno_ejecucion_lenguaje', 'sistema_operativo', 'otro'] },
+            { name: "descripcion"        , typeName: 'text' }
         ],
         primaryKey: ['producto'],
     }

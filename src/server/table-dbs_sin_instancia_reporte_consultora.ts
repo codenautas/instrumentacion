@@ -25,7 +25,7 @@ export function dbs_sin_instancia_reporte_consultora(_context: TableContext): Ta
             from:`(SELECT dbs.database, dbs.servidor, s.ip, (m.producto||m.version) motor_db, dbs.port, s.referentes referentes_server, dbs.estado, dbs.obs, dbs.eliminado, s.eliminado server_eliminado
                 FROM databases dbs 
                 LEFT JOIN servidores s USING(servidor)
-                LEFT JOIN motores m ON s.servidor=m.servidor and (m.producto = 'postgres' or m.producto = 'sqlserver') and m.puerto=dbs.port::text
+                LEFT JOIN motores_instalados m ON s.servidor=m.servidor and (m.producto = 'postgres' or m.producto = 'sqlserver') and m.puerto=dbs.port::text
                 LEFT JOIN instapp i ON (dbs.servidor=i.db_servidor AND dbs.database=i.database AND dbs.port = i.db_port)
                 WHERE i.instancia is null AND dbs.eliminado is not true AND s.eliminado is not true
                 ORDER BY database)`

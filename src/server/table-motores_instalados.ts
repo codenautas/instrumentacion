@@ -2,11 +2,11 @@
 
 import {TableDefinition, TableContext} from "./types-instrumentacion"
 
-export function motores(context: TableContext): TableDefinition {
+export function motores_instalados(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
     return {
-        name: 'motores',
-        elementName: 'motor',
+        name: 'motores_instalados',
+        elementName: 'motor_instalado',
         editable: admin,
         fields: [
             { name: "servidor"           , typeName: 'text' },
@@ -19,6 +19,7 @@ export function motores(context: TableContext): TableDefinition {
         foreignKeys:[
             {references: 'servidores'      , fields:['servidor']},
             {references: 'productos'       , fields:['producto']},
+            {references: 'versiones'       , fields:['producto','version']},
         ],
     }
 }
