@@ -21,7 +21,7 @@ import { backups_externos } from './table-backups_externos';
 import { instancias_reporte_consultora } from './table-instancias_reporte_consultora';
 import { servers_sin_dbs_ni_instancias_reporte_consultora } from './table-servers_sin_dbs_ni_instancias_reporte_consultora';
 import { dbs_sin_instancia_reporte_consultora } from './table-dbs_sin_instancia_reporte_consultora';
-import { motores_instalados } from './table-motores_instalados';
+import { servidores_versiones } from './table-servidores_versiones';
 import { repositorios } from './table-repositorios';
 import { productos } from './table-productos';
 import { textos_doc } from './table-textos_doc';
@@ -36,6 +36,7 @@ import { databases_referentes_backups } from "./table-databases_referentes_backu
 import { emails } from "./table-emails";
 import { versiones_base } from "./table-versiones_base";
 import { versiones } from "./table-versiones";
+import { instapps_productos } from "./table-instapps_productos";
 
 export type Constructor<T> = new(...args: any[]) => T;
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base:T){
@@ -245,8 +246,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                         if(arr.length > 0){
                             const element = html.li(arr);
                             return (element);
+                        }else{
+                            return null
                         }
-                    }),
+                    }).filter((e:any)=>!!e)
                 ];
                 if(elementos.length>0){
                     return [
@@ -368,7 +371,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     'platform',
                 ]
                 res.type('html');
-                res.write(html.h1(['Datos del puesto de trabajo N° ',req.ip.split(/[:.]/).pop()]).toHtmlText({},{}));
+                res.write(html.h1(['Datos del puesto de trabajo N° ',req.ip?.split(/[:.]/).pop()]).toHtmlText({},{}));
                 attrs.forEach(function(attr){
                     // @ts-ignore EL user agent para mostrar es un string!!!
                     var userAgentParaMostrar:string=(req.useragent?req.useragent[attr]:'') || '';
@@ -416,7 +419,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                     {menuType:'table', name:'productos'},
                     {menuType:'table', name:'versiones_base'},
                     {menuType:'table', name:'versiones'},
-                    {menuType:'table', name:'motores_instalados'},
+                    {menuType:'table', name:'servidores_versiones'},
+                    {menuType:'table', name:'instapps_productos'},
                 ]}, 
                 {menuType:'menu', name:'backups', menuContent:[
                     {menuType:'table', name:'backups_externos', label:'registro backups'},
@@ -454,7 +458,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 operativos_instancias,
                 repositorios_instancias,
                 uso,
+                productos,
                 instapp,
+                instapps_productos,
                 backups,
                 backups_externos,
                 instancias_reporte_consultora,
@@ -462,9 +468,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
                 dbs_sin_instancia_reporte_consultora,
                 versiones_base,
                 versiones,
-                motores_instalados,
+                servidores_versiones,
                 repositorios,
-                productos,
                 emails,
                 areas,
                 api_calls

@@ -40,7 +40,7 @@ var procedures: ProcedureDef[] = [
         parameters:[
             {name:'token', typeName:'text'},
         ],
-        coreFunction: async function(context: ProcedureContext, _parameters: CoreFunctionParameters){
+        coreFunction: async function(context: ProcedureContext, _parameters: CoreFunctionParameters<{token:string}>){
             await context.client.query("SELECT * FROM api_calls WHERE when IS NULL").onRow(
                 // @ts-ignore
                 async function(row:{call:string}, _result){
@@ -54,7 +54,7 @@ var procedures: ProcedureDef[] = [
         action: 'show_databases_referentes_backups',
         parameters:[],
         resultOk:'showGrid',
-        coreFunction:async function(_context:ProcedureContext, _params:CoreFunctionParameters){
+        coreFunction:async function(_context:ProcedureContext, _params:CoreFunctionParameters<{}>){
             return {tableName:'databases_referentes_backups'};
         }
     }
