@@ -1,5 +1,10 @@
 -- Usar el schema instrumentacion
 SET search_path TO instrumentacion;
+
+set role to postgres;
+ALTER TABLE IF EXISTS instrumentacion.ambientes
+    OWNER to instrumentacion_admin;
+
 set role to instrumentacion_admin;
 
 -- Agrego tablas versiones_base y versiones
@@ -43,7 +48,6 @@ alter table "versiones" add constraint "version<>''" check ("version"<>'');
 alter table "versiones" add constraint "version_base<>''" check ("version_base"<>'');
 alter table "versiones" add constraint "url<>''" check ("url"<>'');
 alter table "versiones" add constraint "descripcion<>''" check ("descripcion"<>'');
-alter table "versiones" add constraint "versiones_uk_producto-version_base-seg_verificada" unique ("producto", "version_base", "seg_verificada");
 alter table "versiones" add constraint "versiones-version_base-prefijo-version" check (version = version_base OR version LIKE version_base || '.%');
 
 -- fks
@@ -118,6 +122,12 @@ PERFORM enance_table('instapps_productos','servidor,instancia,ambiente,producto'
 end
 $SQL_ENANCE$;
 
+----------------------------------------------------
+-- Inserto versiones_base y versiones desde servidores_versiones
+
+-- Actualiza la columna version eliminando espacios y saltos de línea al inicio y al final
+UPDATE servidores_versiones
+SET version = btrim(regexp_replace(version, '[\r\n]+', '', 'g'));
 
 -- crear un índice único parcial que impone: a lo sumo 1 fila con seg_verificada = true por (producto, version_base)
 CREATE UNIQUE INDEX versiones_unq_producto_version_base_seg_verificada_true
