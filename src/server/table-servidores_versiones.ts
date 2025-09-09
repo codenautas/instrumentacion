@@ -6,7 +6,7 @@ export function servidores_versiones(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
     return {
         name: 'servidores_versiones',
-        elementName: 'motor_instalado',
+        elementName: 'servidor_version',
         editable: admin,
         fields: [
             { name: "servidor"           , typeName: 'text' },
@@ -20,6 +20,9 @@ export function servidores_versiones(context: TableContext): TableDefinition {
             {references: 'servidores'      , fields:['servidor']},
             {references: 'productos'       , fields:['producto']},
             {references: 'versiones'       , fields:['producto','version']},
+        ],
+        detailTables:[
+            {table:'instapps_productos', fields:['servidor', 'producto', 'version'], abr:'I', label:'instancias'},
         ],
     }
 }

@@ -41,7 +41,7 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
             LEFT JOIN servidores s ON ia.servidor=s.servidor
             LEFT JOIN servidores sb ON ia.db_servidor=sb.servidor
             LEFT JOIN repositorios r USING(repositorio)
-            LEFT JOIN motores_instalados m ON sb.servidor=m.servidor AND (m.producto = 'postgres' OR m.producto = 'sqlserver') AND m.puerto=ia.db_port::text )`
+            LEFT JOIN servidores_versiones m ON sb.servidor=m.servidor AND (m.producto = 'postgres' OR m.producto = 'sqlserver') AND m.puerto=ia.db_port::text )`
         },
         primaryKey: ['sistema','escenario','ip_server_app']
     }
