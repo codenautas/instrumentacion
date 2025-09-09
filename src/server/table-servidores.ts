@@ -34,7 +34,7 @@ export function servidores(context: TableContext): TableDefinition {
         constraints:[{constraintType:'unique', consName:'uk_ip' , fields:['ip']}],
         detailTables:[
             {table: 'databases'               , fields:['servidor'], abr:'D', label:'databases'    },
-            {table: 'motores_instalados'    , fields:['servidor'], abr:'MI', label:'motores instalados'      },
+            {table: 'servidores_versiones'    , fields:['servidor'], abr:'PI', label:'productos instalados'      },
             {table: 'instapp'                 , fields:['servidor'], abr:'I', label:'instalaciones'},
             {table: 'operativos_instancias'   , fields:['servidor'], abr:'O', label:'operativos'},
             {table: 'repositorios_instancias' , fields:['servidor'], abr:'R', label:'repositorios'},

@@ -14,5 +14,8 @@ export function productos(context: TableContext): TableDefinition {
             { name: "descripcion"        , typeName: 'text' }
         ],
         primaryKey: ['producto'],
+        detailTables:[
+            {table:'instapps_productos', fields:['producto'], abr:'I', label:'instapps'},
+        ],
     }
 }

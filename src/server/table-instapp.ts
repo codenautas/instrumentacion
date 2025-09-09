@@ -20,8 +20,7 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "criticidad"          , typeName: 'text'    },
             { name: "tolerancia_downtime" , typeName: 'text'    },
             { name: "servidor"            , typeName: 'text'    , nullable:false },
-            { name: "producto"            , typeName: 'text'    },
-            { name: "version_producto"    , typeName: 'text'    },
+            { name: "motor"               , typeName: 'text'    }, //recuperar datos de aqui y borrar columna
             { name: "puerto"              , typeName: 'integer' , label:'puerto_app'},
             { name: "user"                , typeName: 'text'    , visible:false },
             { name: "db_servidor"         , typeName: 'text'    },
@@ -44,12 +43,11 @@ export function instapp(context: TableContext): TableDefinition {
             {references: 'databases'    , fields:[{source:'db_servidor', target:'servidor'}, 'database', {source:'db_port', target:'port'}]},
             {references: 'repositorios' , fields:['repositorio']},
             {references: 'operativos'   , fields:['operativo']},
-            {references: 'motores_instalados' , fields:['servidor', 'producto', {source:'version_producto', target:'version'}]},
             {references: 'uso'          , fields:['uso']},
             {references: 'ambientes'    , fields:['ambiente'], displayFields:['orden']},
         ],
         detailTables:[
-            {table:'emails', fields:['instancia','ambiente'], abr:'E'},
+            {table:'instapps_productos', fields:['instancia','ambiente'], abr:'P', label:'productos'},
         ],
         sortColumns:[{column:'ambientes__orden', order:1},{column:'fecha_instalacion', order:-1}],
         constraints:[

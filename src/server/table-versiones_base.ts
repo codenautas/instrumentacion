@@ -6,8 +6,6 @@ import {TableDefinition, TableContext} from "./types-instrumentacion"
 * - version_base: es la version general soportada para la que se define una fecha_fin_soporte, la que si cambia rompe compatibilidad, por lo gral major, pero podría ser major + minor, por lo que en este campo aveces va a ir un solo número (ej: 2) y otras veces dos números (ej: 2.1)
 * - fin_soporte_seg: fecha en la que se deja de dar soporte de seguridad entendiendo por "soporte de seguridad" lo que nosotros consideremos (parches de seguridad o de seguridad + bugs críticos)
 * - soporte_seg_actual: automaticamente se tilda si la version_base sigue teniendo soporte de seguridad en la fecha actual (fin_soporte_seg) y se destilda cuando "caduca" (por cron job o trigger o script), TODO: por ahora se está haciendo manual
-* - dependencia_producto: producto del que depende esta version_base (ej inventado: postgres depende de ubuntu)
-* - dependencia_version_base: version_base de la que depende esta versión base (ej inventado: postgres 17.2 depende de ubuntu 24.04)
  */
 export function versiones_base(context: TableContext): TableDefinition {
     var admin = context.user.rol === 'admin';
