@@ -20,7 +20,6 @@ export function instapp(context: TableContext): TableDefinition {
             { name: "criticidad"          , typeName: 'text'    },
             { name: "tolerancia_downtime" , typeName: 'text'    },
             { name: "servidor"            , typeName: 'text'    , nullable:false },
-            { name: "motor"               , typeName: 'text'    }, //recuperar datos de aqui y borrar columna
             { name: "puerto"              , typeName: 'integer' , label:'puerto_app'},
             { name: "user"                , typeName: 'text'    , visible:false },
             { name: "db_servidor"         , typeName: 'text'    },
