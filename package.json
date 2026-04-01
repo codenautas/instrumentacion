@@ -13,7 +13,7 @@
     "unlogged"
   ],
   "dependencies": {
-    "backend-plus": "^2.5.2-betha.42",
+    "backend-plus": "^2.6.0",
     "js-to-html": "^2.0.0-betha",
     "mini-tools": "^1.13.4",
     "mixin-patch": "~0.5.0",
