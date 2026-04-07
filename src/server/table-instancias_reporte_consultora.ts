@@ -13,6 +13,7 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
             {name: "descripcion",        typeName: "text", label:"inst.uso + repo.desc"},
             {name: "escenario",          typeName: "text", label:'inst.ambiente'},
             {name: "ip_server_app",      typeName: "text"},
+            {name: "criticidad",         typeName: "text"},
             {name: "puerto_app",         typeName: "integer", label:'inst.puerto'},
             {name: "referentes",         typeName: "text", label:'coalesce(repo.referente, s.referentes)'},
             {name: "fuente",             typeName: "text", label:'repo (lenguaje + tipo_db + tecnologias)'},
@@ -27,14 +28,15 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
         sql:{
             isTable:false,
             from:`(SELECT ia.operativo, ia.instancia AS sistema, NULLIF(CONCAT_WS('; ', ia.uso, r.descripcion), '') AS descripcion,
-                ia.ambiente AS escenario, s.ip AS ip_server_app, COALESCE(r.referente, s.referentes) AS referentes, 
-                NULLIF(CONCAT_WS('; ', 
-                        CASE WHEN r.lenguaje IS NOT NULL THEN 'lenguajes: ' || r.lenguaje END, 
-                        CASE WHEN r.tipo_db IS NOT NULL THEN 'tipo db: ' || r.tipo_db END, 
+                ia.ambiente AS escenario, s.ip AS ip_server_app, ia.criticidad,
+               COALESCE(r.referente, s.referentes) AS referentes,
+                NULLIF(CONCAT_WS('; ',
+                        CASE WHEN r.lenguaje IS NOT NULL THEN 'lenguajes: ' || r.lenguaje END,
+                        CASE WHEN r.tipo_db IS NOT NULL THEN 'tipo db: ' || r.tipo_db END,
                         CASE WHEN r.tecnologias IS NOT NULL THEN 'tecnologias: ' || r.tecnologias END
                 ), '') AS fuente,
-                ia.puerto AS puerto_app, r.git_host AS repositorio, NULLIF(CONCAT_WS('', s.base_url, ia.base_url), '') AS detalle_del_acceso, 
-                NULLIF(CONCAT_WS(' ', m.producto, m.version), '') AS motor_db, ia.database AS nombre_db, ia.db_port AS puerto_db, 
+                ia.puerto AS puerto_app, r.git_host AS repositorio, NULLIF(CONCAT_WS('', s.base_url, ia.base_url), '') AS detalle_del_acceso,
+                NULLIF(CONCAT_WS(' ', m.producto, m.version), '') AS motor_db, ia.database AS nombre_db, ia.db_port AS puerto_db,
                 sb.ip AS ip_servidor_db, s.eliminado AS server_eliminado
             FROM instapp ia
             LEFT JOIN databases dbs ON ia.db_servidor = dbs.servidor AND ia.database=dbs.database AND ia.db_port = dbs.port
