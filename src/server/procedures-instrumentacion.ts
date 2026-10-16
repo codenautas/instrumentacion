@@ -41,10 +41,9 @@ var procedures: ProcedureDef[] = [
             {name:'token', typeName:'text'},
         ],
         coreFunction: async function(context: ProcedureContext, _parameters: CoreFunctionParameters<{token:string}>){
-            await context.client.query("SELECT * FROM api_calls WHERE when IS NULL").onRow(
-                // @ts-ignore
-                async function(row:{call:string}, _result){
-                    await requestableP(https).request(row.call)
+            await context.client.query('SELECT * FROM api_calls WHERE "when" IS NULL').onRow(
+                async function(row:Record<string, unknown>){
+                    await requestableP(https).request(String(row.call))
                     console.log('LISTO')
                 }
             );
