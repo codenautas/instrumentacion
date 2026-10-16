@@ -3,6 +3,9 @@ server:
   port: 3040
   base-url: /instrumentacion
   session-store: memory
+  skins:
+    modern:
+      local-path: node_modules/backend-skins/dist/
 db:
   motor: postgresql
   host: localhost
@@ -58,6 +61,7 @@ login:
     inactiveFail: es usuario está marcado como inactivo
 client-setup:
   title: Instrumentacion
+  skin: modern
   cursors: true
   lang: es
   menu: true
