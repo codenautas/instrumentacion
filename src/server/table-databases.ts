@@ -19,6 +19,10 @@ export function databases(context: TableContext): TableDefinition {
             { name: "periodo"               , typeName: 'text'    },
             { name: "area"                  , typeName: 'text'    },
             { name: "estado"                , typeName: 'text'    },
+            // NO SACAR: aunque no se muestra, la columna tiene que existir porque la usan los reportes
+            // dbs_sin_instancia_reporte_consultora y servers_sin_dbs_ni_instancias_reporte_consultora (dbs.eliminado).
+            // Sin ella esos reportes fallan (y también en cualquier base nueva creada con el dump).
+            { name: "eliminado"             , typeName: 'boolean', visible: false },
             { name: "en_campo"              , typeName: 'boolean' },
             { name: "seg_confidencialidad"  , typeName: 'integer' },
             { name: "seg_integridad"        , typeName: 'integer' },
