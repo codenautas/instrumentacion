@@ -14,30 +14,33 @@
   ],
   "dependencies": {
     "backend-plus": "^2.6.0",
+    "backend-skins": "^0.1.34",
     "js-to-html": "^2.0.0-betha",
     "mini-tools": "^1.13.4",
-    "mixin-patch": "~0.5.0",
+    "mixin-patch": "^1.0.0",
     "pg-triggers": "~0.4.3",
     "sql-tools": "^0.1.4",
     "typescript": "5.9.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "copyfiles": "~2.4.1"
+    "@types/express-session": "^1.19.0",
+    "copyfiles": "~2.4.1",
+    "express-useragent": "^2.2.3",
+    "mocha": "^11.8.0"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 22"
   },
   "scripts": {
-    "x-test": "tsc || echo \"continue with errors\" && mocha --reporter spec --bail --check-leaks tests\\tests\\*.js",
-    "test": "(npm run build || echo \"continue with errors\") && mocha --reporter spec --bail --check-leaks tests/tests/*.js",
+    "test": "npm run build && mocha --reporter spec --bail --check-leaks tests/tests/*.js",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks tests/tests/",
     "start": "node dist/server/server-instrumentacion.js",
     "prepare": "npm run build",
     "cp": "copyfiles -f src/client/img/* dist/client/img",
-    "build": "npm run cp && (tsc -p tsconfig-client.json || echo \"continue w/error\") && (tsc -p tsconfig-server.json  || echo \"continue w/error\") && mixin-patch",
-    "watch:buildC": "(tsc -p src/client --watch || echo \"continue w/error\")",
-    "watch:buildS": "(tsc -p src/server --watch || echo \"continue w/error\")"
+    "build": "npm run cp && tsc -p tsconfig-client.json && tsc -p tsconfig-server.json && mixin-patch",
+    "watch:buildC": "tsc -p src/client --watch",
+    "watch:buildS": "tsc -p src/server --watch"
   },
   "qa-control": {
     "package-version": "0.3.0",

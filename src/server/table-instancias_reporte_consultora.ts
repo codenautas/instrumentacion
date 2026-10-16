@@ -29,7 +29,7 @@ export function instancias_reporte_consultora(_context: TableContext): TableDefi
             isTable:false,
             from:`(SELECT ia.operativo, ia.instancia AS sistema, NULLIF(CONCAT_WS('; ', ia.uso, r.descripcion), '') AS descripcion,
                 ia.ambiente AS escenario, s.ip AS ip_server_app, ia.criticidad,
-               COALESCE(r.referente, s.referentes) AS referentes,
+                COALESCE(r.referente, s.referentes) AS referentes,
                 NULLIF(CONCAT_WS('; ',
                         CASE WHEN r.lenguaje IS NOT NULL THEN 'lenguajes: ' || r.lenguaje END,
                         CASE WHEN r.tipo_db IS NOT NULL THEN 'tipo db: ' || r.tipo_db END,

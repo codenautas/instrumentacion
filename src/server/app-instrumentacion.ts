@@ -3,7 +3,7 @@
 import * as backendPlus from "backend-plus";
 import { defConfig } from "./def-config";
 import { procedures } from "./procedures-instrumentacion";
-import { AppBackend, ClientModuleDefinition, ExpressPlus, Request, Response } from "./types-instrumentacion";
+import { AppBackend, ClientModuleDefinition, ExpressPlus, OptsClientPage, Request, Response } from "./types-instrumentacion";
 export * from "./types-instrumentacion";
 import { usuarios } from './table-usuarios';
 import { ubicaciones } from './table-ubicaciones';
@@ -30,24 +30,60 @@ import { api_calls } from './table-api_calls';
 import { ambientes } from './table-ambientes';
 import * as MiniTools from "mini-tools";
 import { unexpected } from 'cast-error';
-import { html, HtmlTag } from 'js-to-html';
+import { html, Html } from 'js-to-html';
 import { NextFunction } from "express";
+import type { AgentDetails } from "express-useragent";
 import { databases_referentes_backups } from "./table-databases_referentes_backups";
 import { emails } from "./table-emails";
 import { versiones_base } from "./table-versiones_base";
 import { versiones } from "./table-versiones";
 import { instapps_productos } from "./table-instapps_productos";
 
+// TypeScript exige `any[]` en el constructor de un mixin (error TS2545 con cualquier otro tipo)
 export type Constructor<T> = new (...args: any[]) => T;
+
+type FilaDocumentacion = {
+  operativo: string, ambiente: string | null, uso: string | null, repositorio: string | null, base_url: string | null, fecha_instalacion: Date | null,
+  git_host: string | null, git_group: string | null, descripcion: string | null, git_project: string | null,
+  lenguaje: string | null, capac_ope: string | null, tipo_db: string | null, tecnologias: string | null,
+  ope_nom: string | null, ope_desc: string | null, ope_annio: number | null, ope_onda: string | null,
+  ser_base_url: string | null, u_orden: number | null, amb_orden: number | null
+}
+type TextoDoc = { codigo: string, texto: string | null }
+type TextosDocumentacion = { encabezado: string, pie: string, archivo: string }
+
+// pg-promise-strict entrega las filas sin tipar: acá se convierten a tipos explícitos, campo por campo
+type FilaSinTipar = Record<string, unknown>
+function texto(valor: unknown): string | null {
+  return valor == null ? null : String(valor);
+}
+function numero(valor: unknown): number | null {
+  return valor == null ? null : Number(valor);
+}
+function fecha(valor: unknown): Date | null {
+  return valor == null ? null : valor instanceof Date ? valor : new Date(String(valor));
+}
+function filaDocumentacion(row: FilaSinTipar): FilaDocumentacion {
+  return {
+    operativo: String(row.operativo), ambiente: texto(row.ambiente), uso: texto(row.uso), repositorio: texto(row.repositorio), base_url: texto(row.base_url), fecha_instalacion: fecha(row.fecha_instalacion),
+    git_host: texto(row.git_host), git_group: texto(row.git_group), descripcion: texto(row.descripcion), git_project: texto(row.git_project),
+    lenguaje: texto(row.lenguaje), capac_ope: texto(row.capac_ope), tipo_db: texto(row.tipo_db), tecnologias: texto(row.tecnologias),
+    ope_nom: texto(row.ope_nom), ope_desc: texto(row.ope_desc), ope_annio: numero(row.ope_annio), ope_onda: texto(row.ope_onda),
+    ser_base_url: texto(row.ser_base_url), u_orden: numero(row.u_orden), amb_orden: numero(row.amb_orden)
+  };
+}
+function textoDoc(row: FilaSinTipar): TextoDoc {
+  return { codigo: String(row.codigo), texto: texto(row.texto) };
+}
 export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base: T) {
 
   return class AppInstrumentacion extends Base {
 
     constructor(...args: any[]) {
-      super(args);
+      super(...args);
     }
 
-    clientIncludes(req: Request, opts: any): ClientModuleDefinition[] {
+    clientIncludes(req: Request, opts?: OptsClientPage): ClientModuleDefinition[] {
       return super.clientIncludes(req, opts).concat(
         req && req.user ? [
           { type: 'js', src: 'client/instrumentacion.js' }
@@ -64,7 +100,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       this.setStaticConfig(defConfig);
     }
 
-    commonPage(req: Request, content: HtmlTag<any>[], documentText: any) {
+    commonPage(req: Request, content: Html[], documentText: TextosDocumentacion) {
       let baseUrl = `${this.app.path()}/client`;
       var lang = req.headers["accept-language"]?.match(/^\w\w/)?.[0];
 
@@ -100,9 +136,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       ])
     }
 
-    groupBy(objectArray: any, property: any) {
-      return objectArray.reduce((acc: any, obj: any) => {
-        const key = obj[property];
+    groupBy<T, K extends keyof T>(objectArray: T[], property: K) {
+      return objectArray.reduce((acc: Record<string, T[]>, obj: T) => {
+        const key = String(obj[property]);
         const curGroup = acc[key] ?? [];
         return { ...acc, [key]: [...curGroup, obj] };
       }, {});
@@ -116,14 +152,14 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       return `${day}/${month}/${year}`;
     }
 
-    contentPage(documentRow: any) {
+    contentPage(documentRow: FilaDocumentacion[]) {
 
       const documents = this.groupBy(documentRow, 'operativo');
 
-      let mainContent: HtmlTag<any>[] = [];
-      const elementOperativo = (title: String, result: any, isDate: boolean = false) => {
+      let mainContent: Html[] = [];
+      const elementOperativo = (title: String, result: string | number | Date | null, isDate: boolean = false) => {
         if (!!result) {
-          isDate && (result = this.convertDate(result))
+          isDate && result instanceof Date && (result = this.convertDate(result))
           return html.div([
             html.b([title]),
             [`${result}`],
@@ -133,7 +169,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         }
       }
 
-      const elementDescripcion = (title: String, result: any) => {
+      const elementDescripcion = (title: String, result: string | null) => {
         if (!!result) {
           return html.div({ class: 'salto-linea' }, [
             html.b([title]),
@@ -148,7 +184,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         return cadena.replace(/^\/+|\/+$/g, '').trim();
       }
 
-      const repositorios = (operativo: any) => {
+      const repositorios = (operativo: FilaDocumentacion[]) => {
         const documentR = operativo[0];
         let url = '';
         let arr = [];
@@ -190,7 +226,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
           return [];
         }
       }
-      const caracteristicas = (operativo: any) => {
+      const caracteristicas = (operativo: FilaDocumentacion[]) => {
         const documentR = operativo[0];
         let arr = [];
         (!!documentR.lenguaje) && arr.push(html.li([
@@ -220,10 +256,10 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         }
       }
 
-      const urls = (operativo: any) => {
+      const urls = (operativo: FilaDocumentacion[]) => {
 
-        const elementos = [
-          operativo.map((e: any) => {
+        const elementos = (
+          operativo.map((e: FilaDocumentacion) => {
             const arr = [];
             let url: string = '';
             if (!!e.ambiente) {
@@ -249,8 +285,8 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             } else {
               return null
             }
-          }).filter((e: any) => !!e)
-        ];
+          }).filter((e: Html | null) => !!e)
+        );
         if (elementos.length > 0) {
           return [
             html.h3(['Urls de Acceso']),
@@ -264,9 +300,9 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       Object.keys(documents).forEach(key => {
         const operativo = documents[key];
         const documentR = operativo[0];
-        const operativoSortFecha = operativo.sort((a: any, b: any) => a.amb_orden - b.amb_orden || a.fecha_instalacion - b.fecha_instalacion);
+        const operativoSortFecha = operativo.sort((a, b) => (a.amb_orden ?? 0) - (b.amb_orden ?? 0) || Number(a.fecha_instalacion) - Number(b.fecha_instalacion));
         const fechaInst = operativoSortFecha[0];
-        const content: HtmlTag<any>[] = [
+        const content: Html[] = [
           html.div({ class: 'blockquote' }, [
 
             html.div({ class: 'salto-pagina' }, [
@@ -301,39 +337,37 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       super.addLoggedServices();
       be.app.get(`/documentacion`, async function (req: Request, res: Response, _next: NextFunction) {
         try {
-          let documentQuery: any;
-          let documentTextQuery: any;
+          let documentRow: FilaDocumentacion[] = [];
+          let documentTextRow: TextoDoc[] = [];
           await be.inDbClient(req, async function (client) {
-            documentQuery = client.query(`
-                            select
-                            ia.operativo, ia.ambiente, ia.uso, ia.repositorio, ia.base_url, ia.fecha_instalacion, ia.uso,
-                            a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
-                            ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda,
-                            ser.base_url as ser_base_url,
-                            u.orden as u_orden,
-                            amb.orden as amb_orden
-                            from instapp ia
-                            inner join operativos ope on (ope.operativo = ia.operativo)
-                            left join repositorios a on (a.repositorio = ia.repositorio)
-                            left join ambientes amb on (amb.ambiente = ia.ambiente)
-                            left join servidores ser on (ser.servidor = ia. servidor)
-                            left join uso u on (u.uso = ia.uso)
-                            order by ope.operativo asc, amb.orden asc, u.orden asc, ia.instancia asc, ia.ambiente asc
-                        `, []).fetchAll();
-            documentTextQuery = client.query(`
-                            select *
-                            from textos_doc
-                        `, []).fetchAll();
+            documentRow = (await client.query(`
+              select
+                ia.operativo, ia.ambiente, ia.uso, ia.repositorio, ia.base_url, ia.fecha_instalacion,
+                a.git_host, a.git_group, a.descripcion, a.git_project, a.lenguaje, a.capac_ope, a.tipo_db, a.tecnologias,
+                ope.nombre as ope_nom, ope.descripcion as ope_desc, ope.annio as ope_annio, ope.onda as ope_onda,
+                ser.base_url as ser_base_url,
+                u.orden as u_orden,
+                amb.orden as amb_orden
+                from instapp ia
+                inner join operativos ope on (ope.operativo = ia.operativo)
+                left join repositorios a on (a.repositorio = ia.repositorio)
+                left join ambientes amb on (amb.ambiente = ia.ambiente)
+                left join servidores ser on (ser.servidor = ia.servidor)
+                left join uso u on (u.uso = ia.uso)
+                order by ope.operativo asc, amb.orden asc, u.orden asc, ia.instancia asc, ia.ambiente asc
+              `, []).fetchAll()).rows.map(filaDocumentacion);
+            documentTextRow = (await client.query(`
+              select *
+                from textos_doc
+              `, []).fetchAll()).rows.map(textoDoc);
           });
-          const { rows: documentRow } = await documentQuery!;
-          const { rows: documentTextRow } = await documentTextQuery!;
           if (documentRow.length === 0) throw new Error('No hay operativos');
-          let docText = {
+          let docText: TextosDocumentacion = {
             encabezado: '',
             pie: '',
             archivo: 'Registro código fuente'
           }
-          documentTextRow.forEach((element: any) => {
+          documentTextRow.forEach((element) => {
             if (element.codigo === 'nombre_de_archivo' && !!element.texto) {
               docText.archivo = element.texto;
             }
@@ -351,7 +385,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
           console.error('ERROR CON', req.headers.host, req.url)
           var error = unexpected(err)
           error.code = error.code || '500';
-          error.message = req.params.nickname + ': ' + error.message;
+          error.message = 'documentacion: ' + error.message;
           MiniTools.serveErr(req, res, _next)(error);
         }
       });
@@ -364,7 +398,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
       super.addUnloggedServices(mainApp, baseUrl);
 
       mainApp.get(baseUrl + '/ver', async function (req: Request, res: Response, _next: NextFunction) {
-        var attrs = [
+        var attrs: (keyof Pick<AgentDetails, 'browser' | 'version' | 'os' | 'platform'>)[] = [
           'browser',
           'version',
           'os',
@@ -373,8 +407,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         res.type('html');
         res.write(html.h1(['Datos del puesto de trabajo N° ', req.ip?.split(/[:.]/).pop()]).toHtmlText({}, {}));
         attrs.forEach(function (attr) {
-          // @ts-ignore EL user agent para mostrar es un string!!!
-          var userAgentParaMostrar: string = (req.useragent ? req.useragent[attr] : '') || '';
+          var userAgentParaMostrar: string = String((req.useragent ? req.useragent[attr] : '') || '');
           res.write(html.p([attr, ' ', html.b(userAgentParaMostrar)]).toHtmlText({}, {}));
         })
         await be.inTransaction(req, async function (client) {
@@ -387,10 +420,11 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
             await client.query('INSERT INTO user_agents (ip, user_agent) VALUES ($1, $2)', [req.ip, req.headers["user-agent"]]).execute();
           }
           console.log(req.headers);
-          res.write('<h2>ok</h2>');
           await client.query('UPDATE user_agents SET ips = $3 WHERE ip = $1 AND user_agent = $2', [req.ip, req.headers["user-agent"], req.ips]).execute();
-        }).catch(err => res.end(html.pre(err.message).toHtmlText({}, {})));
-        res.end();
+        }).then(
+          () => res.end('<h2>ok</h2>'),
+          err => res.end(html.pre(unexpected(err).message).toHtmlText({}, {}))
+        );
       });
 
     }
