@@ -14,6 +14,7 @@ Aplicación [backend-plus](https://github.com/codenautas/backend-plus) para inve
 - `src/server/app-instrumentacion.ts`: clase de la app (mixin sobre `AppBackend`): menú, registro de tablas (`prepareGetTables`) y servicios propios:
   - `/documentacion` (logueado): página HTML por operativo, armada con `contentPage`/`commonPage`.
   - `/ver` (sin login): muestra los datos del puesto y registra IP y user agent.
+  - `/config/<instancia>[/<ambiente>]` (sin login, con token): devuelve el `local-config.yaml` de la instancia. Ver `docs/yaml-de-instancias.md`.
 - `src/server/table-*.ts`: una función por tabla que devuelve su `TableDefinition`. Las de `*_reporte_consultora` y `databases_referentes_backups` son vistas (`sql.isTable:false`).
 - `src/server/procedures-instrumentacion.ts`: procedures (`api_call`, provisorio; `show_databases_referentes_backups`).
 - `src/server/def-config.ts`: configuración por defecto (puerto, base, login).
@@ -49,6 +50,7 @@ Reglas generales de los proyectos backend-plus (tomadas de dmencu) más las prop
   - En Windows no editar con `sed -i` ni con herramientas que reescriban el archivo completo, porque pueden convertir CRLF a LF.
   - Antes de commitear, comparar `git diff --stat` con `git diff --ignore-all-space --ignore-cr-at-eol --stat`. Si dan distinto, hay cambios de formato que hay que revertir.
 - Nombres de tablas, columnas, variables de dominio y mensajes en castellano, consistentes con el esquema de la base.
+- Los procedures (`action`) se nombran `objeto_accion`, con la acción siempre al final (`instancia_registrar`, no `registrar_instancia`).
 - Seguir las convenciones de backend-plus para tablas, procedures y endpoints. Antes de trabajar con una tabla, leer su `table-*.ts`.
 
 ### Base de datos
@@ -67,9 +69,14 @@ Reglas generales de los proyectos backend-plus (tomadas de dmencu) más las prop
 - Todos los objetos están en el esquema `instrumentacion`.
 - Antes de cambiar una regla de negocio, buscar si está implementada en una función o trigger de PostgreSQL; no duplicarla en TypeScript.
 - Los SQL de `install/` (listados en `def-config.ts`) sólo se aplican al instalar la base con el dump. Un cambio de estructura que tenga que llegar a bases ya instaladas lleva además un script en `operaciones/`:
-  - Nombre `AAAA-MM-DD-actualizar_descripcion_con_snake_case.sql` (los scripts viejos usan `actualizarAAAA-MM-DD.sql`).
-  - Empieza con `--set role instrumentacion_owner;` comentado y `set search_path = instrumentacion;`. Si hacen falta permisos para el usuario admin, se usa un nombre ficticio (`instrumentacion_admin`) y se deja comentado.
-  - Tiene que poder correrse más de una vez sin romper nada (`create or replace`, `drop ... if exists`, `add column if not exists`).
+  - Nombre `actualizarAAAA-MM-DD.sql` con la fecha del cambio (como todos los de `operaciones/`).
+  - El formato es el que genera el dump (`npm start -- --dump-db`), para que una base actualizada quede igual a una creada de cero: empieza con `set search_path = "instrumentacion", public;`, los nombres de tablas y columnas van entre comillas dobles, y cada columna de texto nueva lleva su `check`, con el nombre que usa el dump:
+    ```
+    alter table "instapp" add column "policy" text;
+    alter table "instapp" add constraint "policy<>''" check ("policy"<>'');
+    ```
+  - Una tabla nueva se escribe como el dump (ver `actualizar2025-07-25.sql`): `create table` con la primary key, los `grant` a `instrumentacion_user` o `instrumentacion_admin` y a `instrumentacion_owner`, los `check` de cada columna de texto y las foreign keys con `on update cascade`.
+  - Los scripts se corren una sola vez por base, así que no llevan guardas (`if not exists`).
 
 ## Compilación
 
