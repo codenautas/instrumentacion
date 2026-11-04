@@ -38,6 +38,7 @@ import { emails } from "./table-emails";
 import { versiones_base } from "./table-versiones_base";
 import { versiones } from "./table-versiones";
 import { instapps_productos } from "./table-instapps_productos";
+import { armarYamlConfig, datosConfig } from "./registrar-instancia";
 
 // TypeScript exige `any[]` en el constructor de un mixin (error TS2545 con cualquier otro tipo)
 export type Constructor<T> = new (...args: any[]) => T;
@@ -84,9 +85,18 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
     }
 
     clientIncludes(req: Request, opts?: OptsClientPage): ClientModuleDefinition[] {
-      return super.clientIncludes(req, opts).concat(
-        req && req.user ? [
-          { type: 'js', src: 'client/instrumentacion.js' }
+      var logueado = !!(req && req.user);
+      // se incluyen siempre (no sólo logueado): backend-plus monta los archivos de lib/ al arrancar, sin usuario
+      var reactYMui: ClientModuleDefinition[] = [
+        { type: 'js', module: 'react', modPath: 'umd', fileDevelopment: 'react.development.js', file: 'react.production.min.js' },
+        { type: 'js', module: 'react-dom', modPath: 'umd', fileDevelopment: 'react-dom.development.js', file: 'react-dom.production.min.js' },
+        { type: 'js', module: '@mui/material', modPath: '../umd', fileDevelopment: 'material-ui.development.js', file: 'material-ui.production.min.js' },
+      ];
+      return reactYMui.concat(super.clientIncludes(req, opts)).concat(
+        logueado ? [
+          { type: 'js', src: 'client/instrumentacion.js' },
+          { type: 'js', src: 'client/ws-registrar-instancia.js' },
+          { type: 'js', src: 'client/ws-yaml-instancia.js' }
         ] : []
       )
     }
@@ -397,6 +407,36 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
 
       super.addUnloggedServices(mainApp, baseUrl);
 
+      // Devuelve el local-config.yaml de una instancia. Sólo si está definido instrumentacion.config-token
+      // en el local-config.yaml y llega igual en el header x-token (o ?token=), p.ej.:
+      //   curl -H "x-token: $T" http://host/instrumentacion/config/etoi271 > /opt/insts/etoi271.yaml
+      mainApp.get(baseUrl + '/config/:instancia{/:ambiente}', async function (req: Request, res: Response, _next: NextFunction) {
+        var tokenEsperado = be.config.instrumentacion?.["config-token"];
+        var tokenRecibido = req.headers['x-token'] ?? req.query.token;
+        if (!tokenEsperado) {
+          res.status(404).type('text').end('config no habilitado');
+          return;
+        }
+        if (tokenRecibido !== tokenEsperado) {
+          res.status(403).type('text').end('token inválido');
+          return;
+        }
+        try {
+          var instancia = String(req.params.instancia);
+          var ambiente = req.params.ambiente == null ? null : String(req.params.ambiente);
+          var datos = await be.inDbClient(req, client => datosConfig(client, instancia, ambiente));
+          if (datos.length === 0) {
+            res.status(404).type('text').end(`no existe la instancia ${instancia}`);
+          } else if (datos.length > 1) {
+            res.status(409).type('text').end(`la instancia ${instancia} está en varios ambientes (${datos.map(d => d.ambiente).join(', ')}); usar /config/${instancia}/<ambiente>`);
+          } else {
+            res.type('text/yaml').end(armarYamlConfig(datos[0]));
+          }
+        } catch (err) {
+          res.status(500).type('text').end(unexpected(err).message);
+        }
+      });
+
       mainApp.get(baseUrl + '/ver', async function (req: Request, res: Response, _next: NextFunction) {
         var attrs: (keyof Pick<AgentDetails, 'browser' | 'version' | 'os' | 'platform'>)[] = [
           'browser',
@@ -405,7 +445,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
           'platform',
         ]
         res.type('html');
-        res.write(html.h1(['Datos del puesto de trabajo N° ', req.ip?.split(/[:.]/).pop()]).toHtmlText({}, {}));
+        res.write(html.h1(['Datos del puesto de trabajo N° ', req.ip?.split(/[:.]/).pop() ?? '']).toHtmlText({}, {}));
         attrs.forEach(function (attr) {
           var userAgentParaMostrar: string = String((req.useragent ? req.useragent[attr] : '') || '');
           res.write(html.p([attr, ' ', html.b(userAgentParaMostrar)]).toHtmlText({}, {}));
@@ -441,6 +481,7 @@ export function emergeAppInstrumentacion<T extends Constructor<AppBackend>>(Base
         },
         {
           menuType: 'menu', name: 'servicios', menuContent: [
+            { menuType: 'instancia_registrar', name: 'instancia_registrar', label: 'registrar instancia' },
             { menuType: 'table', name: 'instapp' },
             { menuType: 'table', name: 'databases' },
             { menuType: 'table', name: 'servidores' },

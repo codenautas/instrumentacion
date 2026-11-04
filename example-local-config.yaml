@@ -1,6 +1,8 @@
 db:
   port: 5435
   password: 39ddkan3a__xfhfheu..33!!
+instrumentacion:
+  config-token: cambiar-por-un-token-largo
 log:
   req: false
 login:
