@@ -13,6 +13,8 @@ RUN npm ci
 FROM node:${NODE_VERSION}-bookworm-slim
 WORKDIR /app
 COPY --from=build --chown=node:node /app ./
+# La app crea la carpeta "sessions" al arrancar y se cierra si no puede (.dockerignore la excluye de la imagen).
+RUN mkdir sessions && chown node:node sessions
 USER node
 # Se llama a node directo, igual que "npm start", para que la señal de apagado llegue a la app.
 CMD ["node", "dist/server/server-instrumentacion.js"]
