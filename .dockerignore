@@ -1,0 +1,12 @@
+.git
+.github
+.vscode
+node_modules
+dist
+sessions
+*.log
+# Configuración local y claves: nunca dentro de la imagen
+local-*
+*-local.*
+.env
+instancia.yaml
